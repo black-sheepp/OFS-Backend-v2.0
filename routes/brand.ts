@@ -10,9 +10,9 @@ router.post("/create-brand", createBrand);
 router.get("/get-all-brands", getAllBrands);
 
 // update a brand
-router.put("/update-brand/:brandId", updateBrand);
+router.put("/update-brand/:id", updateBrand);
 
 // delete a brand
-router.delete("/delete-brand/:brandId", deleteBrand);
+router.delete("/delete-brand/:id", deleteBrand);
 
 export default router;
