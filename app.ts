@@ -4,14 +4,11 @@ import "./config/mongoose";
 import cookieParser from "cookie-parser";
 import indexRouter from "./routes/index";
 import cors from "cors";
-import "./config/firebase";
-
 
 dotenv.config();
 
 const app: Application = express();
 const PORT: string | number = process.env.PORT || 8000;
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
