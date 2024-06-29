@@ -18,6 +18,7 @@ const ReviewSchema: Schema = new Schema({
 // Define the schema for the Product
 const ProductSchema: Schema = new Schema(
 	{
+		SKU: { type: String, unique: true, required: true, length: 10 },
 		name: { type: String, required: true, index: true },
 		brand: { type: mongoose.Schema.Types.ObjectId, ref: "Brand", required: true },
 		description: { type: String, required: true },
@@ -31,7 +32,6 @@ const ProductSchema: Schema = new Schema(
 		featured: { type: Boolean, default: false },
 		inventory: [InventorySchema],
 		careInstructions: { type: String, required: true },
-		SKU: { type: String, unique: true, required: true, length: 10 },
 		tags: { type: [String], required: true, index: true },
 		promotion: { type: String },
 		reviews: [ReviewSchema],
@@ -55,9 +55,5 @@ ProductSchema.pre<IProduct>("save", function (next) {
 ProductSchema.statics.findByBrand = function (brandId: string) {
 	return this.find({ brand: brandId }).populate("brand").exec();
 };
-
-ProductSchema.virtual("fullImageUrls").get(function (this: IProduct) {
-	return this.images.map((image: string) => `https://cdn.example.com/${image}`);
-});
 
 export default mongoose.model<IProduct>("Product", ProductSchema);

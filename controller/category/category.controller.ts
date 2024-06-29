@@ -68,3 +68,20 @@ export const getAllCategories = async (req: Request, res: Response) => {
 		handleError(res, error);
 	}
 };
+
+// Get all subcategories of a category
+export const getAllSubcategories = async (req: Request, res: Response) => {
+	const { id } = req.params;
+
+	try {
+		const category = await CategoryModel.findById(id);
+
+		if (!category) {
+			return sendResponse(res, 404, null, "Category not found");
+		}
+
+		sendResponse(res, 200, category.subcategories, "Subcategories fetched successfully");
+	} catch (error) {
+		handleError(res, error);
+	}
+};
