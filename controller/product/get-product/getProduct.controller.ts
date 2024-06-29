@@ -27,11 +27,20 @@ export const searchProductBySKU = async (req: Request, res: Response) => {
 // Controller function to get product list
 export const getAllProducts = async (req: Request, res: Response): Promise<void> => {
 	try {
-		const products = await Product.find();
-		return sendResponse(res, 200, products, "Products found");
-	} catch (error: any) {
-		return handleError(res, error);
-	}
+        const products = await Product.find()
+            .populate("brand")
+            .populate("category")
+            .populate({
+                path: "category",
+                populate: {
+                    path: "subcategories",
+                    model: "Category", // Specify the model name for subcategories
+                },
+            })
+        return sendResponse(res, 200, products, "Products found");
+    } catch (error: any) {
+        return handleError(res, error);
+    }
 };
 
 // Controller function to get all products by category
@@ -137,6 +146,4 @@ export const getProductsByDiscount = async (req: Request, res: Response): Promis
 // Controller function to search products by name, SKU, brand, category, subcategory, tags
 export const searchProducts = async (req: Request, res: Response): Promise<void> => {
 	const { search } = req.params;
-
-	
 };
