@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { createProduct } from "../controller/product/create-product/createProduct.controller";
-import { getAllProducts, getProductsByBrand, getProductsByCategory, getProductsByDiscount, getProductsByPriceRange, getProductsByRating, searchProductBySKU, searchProducts } from "../controller/product/get-product/getProduct.controller";
+import { getAllProducts, getProductsByBrand, getProductsByCategory, getProductsByDiscount, getProductsByPriceRange, getProductsByRating, searchProductBySKU } from "../controller/product/get-product/getProduct.controller";
 import { UpdateProductBySKU } from "../controller/product/update-product/updateProduct.controller";
+import { searchProducts, validateSearchKeyword } from "../controller/product/get-product/searchProducts.contoller";
 
 const router = Router();
 
@@ -17,8 +18,8 @@ router.put("/update-product/:sku", UpdateProductBySKU);
 // Route to get all products
 router.get("/get-all-products", getAllProducts);
 
-// Route to search product by sku, name, category, brand
-router.get("/search-products/:search", searchProducts);
+// Route to search product by sku, name, category, brand --------
+router.get("/search-products", validateSearchKeyword, searchProducts);
 
 // Route to get all products by category
 router.get("/get-products-by-category/:category", getProductsByCategory);

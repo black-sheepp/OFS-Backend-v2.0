@@ -42,7 +42,6 @@ export const UpdateProductBySKU = async (req: Request, res: Response) => {
             !sellingPrice ||
             !images ||
             !colours ||
-            !featured ||
             !inventory ||
             !careInstructions ||
             !tags ||

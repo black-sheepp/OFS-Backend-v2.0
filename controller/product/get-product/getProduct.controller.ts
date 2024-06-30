@@ -143,7 +143,3 @@ export const getProductsByDiscount = async (req: Request, res: Response): Promis
 	}
 };
 
-// Controller function to search products by name, SKU, brand, category, subcategory, tags
-export const searchProducts = async (req: Request, res: Response): Promise<void> => {
-	const { search } = req.params;
-};
