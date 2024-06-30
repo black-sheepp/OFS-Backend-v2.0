@@ -23,7 +23,7 @@ export interface IBrand extends Document {
 }
 
 // Interface for Inventory schema
-export interface IInventory extends Document {
+export interface IInventory {
 	size: string;
 	quantity: number;
 }
