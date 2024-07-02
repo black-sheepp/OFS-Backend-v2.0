@@ -6,80 +6,53 @@ import bcrypt from "bcryptjs"; // For password hashing
 import { sendEmail } from "../../utils/emailUtil";
 import crypto from "crypto";
 
-
-
 // Controller function to create a new user
 export const createUser = async (req: Request, res: Response): Promise<void> => {
-    const { name, phone, email, password, role } = req.body;
+	const { name, phone, email, password, role } = req.body;
 
-    try {
-        // Check if the user already exists
-        const existingUser = await userSchema.findOne({ email });
+	try {
+		// Check if the user already exists
+		const existingUser = await userSchema.findOne({ email });
 
-        if (existingUser) {
-            return sendResponse(res, 400, null, "User already exists");
-        }
+		if (existingUser) {
+			return sendResponse(res, 400, null, "User already exists");
+		}
 
-        const newUser = new userSchema({
-            name,
-            phone,
-            email,
-            password,
-            roles: role ? [role] : ["customer"],
-        });
+		const newUser = new userSchema({
+			name,
+			phone,
+			email,
+			password,
+			roles: role ? [role] : ["customer"],
+		});
 
-        await newUser.save();
-        sendResponse(res, 201, newUser, "User created successfully");
-    } catch (error) {
-        handleError(res, error);
-    }
+		await newUser.save();
+		sendResponse(res, 201, newUser, "User created successfully");
+	} catch (error) {
+		handleError(res, error);
+	}
 };
 
 // Controller function to create a user profile after creating a user
 export const createUserProfile = async (req: Request, res: Response): Promise<void> => {
-    const { userId } = req.params;
-    const { label, street, city, province, postalCode, country, profilePicture } = req.body;
+	const { userId } = req.params;
+	const { label, street, city, province, postalCode, district, country, profilePicture } = req.body;
 
-    try {
-        const user = await userSchema.findById(userId);
-        if (!user) {
-            return sendResponse(res, 404, null, "User not found");
-        }
+	try {
+		const user = await userSchema.findById(userId);
+		if (!user) {
+			return sendResponse(res, 404, null, "User not found");
+		}
 
-        // Add profile details to the user
-        user.profilePicture = profilePicture;
-        const address = { label, street, city, province, postalCode, country };
-        user.shippingAddresses = user.shippingAddresses ?? [];
-        user.shippingAddresses.push(address);
+		// Add profile details to the user
+		user.profilePicture = profilePicture;
+		const address = { label, street, city, province, postalCode, district, country };
+		user.shippingAddresses = user.shippingAddresses ?? [];
+		user.shippingAddresses.push(address);
 
-        await user.save();
-        sendResponse(res, 200, user, "User profile created successfully");
-    } catch (error) {
-        handleError(res, error);
-    }
+		await user.save();
+		sendResponse(res, 200, user, "User profile created successfully");
+	} catch (error) {
+		handleError(res, error);
+	}
 };
-
-// Controller function to update a user profile
-export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
-    const { userId } = req.params;
-    const { label, street, city, province, postalCode, country, profilePicture, phone } = req.body;
-
-    try {
-        const user = await userSchema.findById(userId);
-        if (!user) {
-            return sendResponse(res, 404, null, "User not found");
-        }
-
-        // Update profile details
-        user.profilePicture = profilePicture;
-        user.phone = phone;
-        const address: IAddress = { label, street, city, province, postalCode, country };
-        user.shippingAddresses = user.shippingAddresses ?? [];
-        user.shippingAddresses.push(address);
-
-        await user.save();
-        sendResponse(res, 200, user, "User profile updated successfully");
-    } catch (error) {
-        handleError(res, error);
-    }
-}   
