@@ -84,13 +84,14 @@ export interface IUser extends Document {
     email: string;
     password: string;
     profilePicture?: string;
-    shippingAddresses: IAddress[];
-	elitePoints: number;
+    shippingAddresses?: Array<any>;
+	status: "active" | "inactive";
+    roles: Array<string>;
+    wishlist?: Array<mongoose.Schema.Types.ObjectId>;
 	wallet: number;
-    roles: string[];
-    wishlist: Types.ObjectId[];
-	resetPasswordToken: string;
-    resetPasswordExpires: Date;
+	elitePoints: number;
+    resetPasswordToken?: string;
+    resetPasswordExpires?: Date;
 }
 
 // Interface for Order schema

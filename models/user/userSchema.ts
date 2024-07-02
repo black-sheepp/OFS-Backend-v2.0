@@ -1,19 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcryptjs";
 import AddressSchema from "./addressSchema";
-
-export interface IUser extends Document {
-    name: string;
-    phone: string;
-    email: string;
-    password: string;
-    profilePicture?: string;
-    shippingAddresses?: Array<any>;
-    roles: Array<string>;
-    wishlist?: Array<mongoose.Schema.Types.ObjectId>;
-    resetPasswordToken?: string;
-    resetPasswordExpires?: Date;
-}
+import { IUser } from "../../utils/interface";
 
 // Define the schema for the User
 const UserSchema: Schema = new Schema(

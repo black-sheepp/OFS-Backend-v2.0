@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createUser, createUserProfile } from "../controller/user/createUser.controller";
 import { getUserProfile } from "../controller/user/getUser.controller";
-import { updateAddress, updateUserProfile } from "../controller/user/updateUser.controller";
+import { requestPasswordReset, resetPassword, updateAddress, updateUserProfile } from "../controller/user/updateUser.controller";
 
 const router = Router();
 
@@ -19,6 +19,12 @@ router.get("/get-user-profile/:userId", getUserProfile)
 
 // update address by address id
 router.put("/update-address/:userId/:addressId", updateAddress)
+
+// request password reset
+router.post("/request-password-reset", requestPasswordReset);
+
+// reset password
+router.post("/reset-password", resetPassword);
 
 
 export default router;

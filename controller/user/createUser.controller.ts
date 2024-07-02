@@ -27,6 +27,21 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 		});
 
 		await newUser.save();
+
+		await sendEmail({
+			to: email,
+			subject: "Account Created",
+			greeting: `Hello ${name.split(' ')[0]},`,
+			intro: "Your account has been created successfully.",
+			details: [
+				{ label: "Name", value: name },
+				{ label: "Phone", value: phone },
+				{ label: "Email", value: email },
+				{ label: "Password", value: password}
+			],
+			footer: "Thank you for using our service.",
+		});
+
 		sendResponse(res, 201, newUser, "User created successfully");
 	} catch (error) {
 		handleError(res, error);
@@ -51,6 +66,21 @@ export const createUserProfile = async (req: Request, res: Response): Promise<vo
 		user.shippingAddresses.push(address);
 
 		await user.save();
+
+		await sendEmail({
+			to: user.email,
+			subject: "Profile Created",
+			greeting: `Hi, ${user.name.split(' ')[0]},`,
+			intro: "Your profile has been created successfully.",
+			details: [
+				{ label: "Name", value: user.name },
+				{ label: "Phone", value: user.phone },
+				{ label: "Email", value: user.email },
+				{ label: "Address", value: `${address.label}, ${address.street}, ${address.city}, ${address.province}, ${address.postalCode}, ${address.district}, ${address.country}` }
+			],
+			footer: "Thank you for using our service.",
+		});
+
 		sendResponse(res, 200, user, "User profile created successfully");
 	} catch (error) {
 		handleError(res, error);
