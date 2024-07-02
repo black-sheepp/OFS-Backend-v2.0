@@ -3,6 +3,12 @@ import mongoose from "mongoose";
 import Product from "../../models/product/productSchema";
 import { sendResponse, handleError } from "../../utils/responseUtil";
 import { IInventory } from "../../utils/interface";
+import dotenv from "dotenv";
+import { sendEmail } from "../../utils/emailUtil";
+
+dotenv.config();
+
+const NODEMAILER_ADMIN_EMAIL = process.env.NODEMAILER_ADMIN_EMAIL ?? "";
 
 // Add Inventory
 export const addInventory = async (req: Request, res: Response): Promise<void> => {
@@ -18,6 +24,24 @@ export const addInventory = async (req: Request, res: Response): Promise<void> =
         const newInventory: IInventory = { size, quantity };
         product.inventory.push(newInventory);
         await product.save();
+
+        // Send email notification
+        await sendEmail({
+            to: NODEMAILER_ADMIN_EMAIL,
+            subject: "New Inventory Added",
+            greeting: "Attention!",
+            intro: `A new inventory has been added to the product with the following details:`,
+            details: [
+                { label: "SKU", value: SKU },
+                { label: "Size", value: size },
+                { label: "Quantity", value: quantity },
+                { label: "Product", value: product.name },
+                { label: "Brand", value: product.brand },
+                { label: "Category", value: product.category },
+                { label: "Subcategory", value: product.subcategory}
+            ],
+            footer: "Thank you!",
+        });
 
         sendResponse(res, 200, product, "Inventory added successfully");
     } catch (error) {
@@ -44,6 +68,23 @@ export const updateInventory = async (req: Request, res: Response): Promise<void
         inventoryItem.quantity = quantity;
         await product.save();
 
+        await sendEmail({
+            to: NODEMAILER_ADMIN_EMAIL,
+            subject: "Inventory Updated",
+            greeting: "Attention!",
+            intro: `The inventory of the product has been updated with the following details:`,
+            details: [
+                { label: "SKU", value: SKU },
+                { label: "Size", value: size },
+                { label: "Quantity", value: quantity },
+                { label: "Product", value: product.name },
+                { label: "Brand", value: product.brand },
+                { label: "Category", value: product.category },
+                { label: "Subcategory", value: product.subcategory}
+            ],
+            footer: "Thank you!",
+        });
+
         sendResponse(res, 200, product, "Inventory updated successfully");
     } catch (error) {
         handleError(res, error);
@@ -63,6 +104,23 @@ export const deleteInventory = async (req: Request, res: Response): Promise<void
 
         product.inventory = product.inventory.filter(item => item.size !== size);
         await product.save();
+
+        // Send email notification
+        await sendEmail({
+            to: NODEMAILER_ADMIN_EMAIL,
+            subject: "Inventory Deleted",
+            greeting: "Attention!",
+            intro: `The inventory of the product has been deleted with the following details:`,
+            details: [
+                { label: "SKU", value: SKU },
+                { label: "Size", value: size },
+                { label: "Product", value: product.name },
+                { label: "Brand", value: product.brand },
+                { label: "Category", value: product.category },
+                { label: "Subcategory", value: product.subcategory}
+            ],
+            footer: "Thank you!",
+        });
 
         sendResponse(res, 200, product, "Inventory deleted successfully");
     } catch (error) {
