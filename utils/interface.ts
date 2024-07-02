@@ -1,4 +1,4 @@
-import { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
 // Interface for Subcategory schema
 export interface ISubcategory extends Document {
@@ -60,23 +60,46 @@ export interface IProduct extends Document {
 	premiumProduct: boolean;
 }
 
+// Interface for Cart schema
+export interface ICart extends Document {
+	user: Schema.Types.ObjectId;
+	products: { product: Schema.Types.ObjectId; quantity: number }[];
+}
+
+// Interface for Sales Data schema
+export interface ISalesData extends Document {
+	product: Schema.Types.ObjectId;
+	brand: Schema.Types.ObjectId;
+	category: Schema.Types.ObjectId;
+	subcategory: Schema.Types.ObjectId;
+	user: Schema.Types.ObjectId;
+	salesAmount: number;
+	salesDate: Date;
+}
+
 // Interface for User schema
 export interface IUser extends Document {
-	name: string;
-	email: string;
-	password: string;
-	role: "user" | "admin";
+    name: string;
+    phone: string;
+    email: string;
+    password: string;
+    profilePicture?: string;
+    shippingAddresses: IAddress[];
+	elitePoints: number;
+	wallet: number;
+    roles: string[];
+    wishlist: Types.ObjectId[];
+	resetPasswordToken: string;
+    resetPasswordExpires: Date;
 }
 
 // Interface for Order schema
 export interface IOrder extends Document {
 	user: Schema.Types.ObjectId;
-	products: {
-		product: Schema.Types.ObjectId;
-		quantity: number;
-	}[];
+	products: { product: Schema.Types.ObjectId; quantity: number }[];
 	totalAmount: number;
-	status: "ordered" | "packed" | "shipped" | "delivered";
+	status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+	orderDate: Date;
 }
 
 // Interface for Wishlist schema
@@ -85,19 +108,12 @@ export interface IWishlist extends Document {
 	products: Schema.Types.ObjectId[];
 }
 
-// Interface for Cart schema
-export interface ICart extends Document {
-	user: Schema.Types.ObjectId;
-	products: {
-		product: Schema.Types.ObjectId;
-		quantity: number;
-	}[];
-}
-
-// Interface for Response object
-export interface IResponse {
-	status: string;
-	statusCode: number;
-	data: any;
-	message: string;
+// Interface for Address schema
+export interface IAddress {
+    label: string;
+    street: string;
+    city: string;
+    province: string;
+    postalCode: string;
+    country: string;
 }
