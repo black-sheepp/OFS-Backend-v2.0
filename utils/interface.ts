@@ -114,6 +114,7 @@ export interface IAddress {
     street: string;
     city: string;
     province: string;
+	district: string;
     postalCode: string;
     country: string;
 }
