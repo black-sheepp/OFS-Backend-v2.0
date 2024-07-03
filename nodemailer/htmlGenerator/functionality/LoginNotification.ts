@@ -19,12 +19,12 @@ export const generateLoginNotificationHtml = (
             color: #000000;
         }
         .content p {
-          font-size: 16px; /* Increased font size for better readability */
+          font-size: 14px; /* Increased font size for better readability */
           line-height: 1.6;
           color: #000000;
         }
         .details p {
-          font-size: 16px; /* Increased font size for better readability */
+          font-size: 14px; /* Increased font size for better readability */
           margin: 8px 0;
           color: #000000;
         }
