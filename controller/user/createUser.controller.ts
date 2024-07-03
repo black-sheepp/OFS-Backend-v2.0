@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import { sendResponse, handleError } from "../../utils/responseUtil";
 import userSchema from "../../models/user/userSchema";
 import { IAddress, IUser } from "../../utils/interface";
-import bcrypt from "bcryptjs"; // For password hashing
+import bcrypt from "bcryptjs";
 import { sendEmail } from "../../nodemailer/emailUtil";
-import crypto from "crypto";
+import { addElitePoints } from "../../utils/elitePoints";
 
 // Controller function to create a new user
 export const createUser = async (req: Request, res: Response): Promise<void> => {
@@ -18,11 +18,13 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 			return sendResponse(res, 400, null, "User already exists");
 		}
 
+		const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+
 		const newUser = new userSchema({
 			name,
 			phone,
 			email,
-			password,
+			password: hashedPassword,
 			roles: role ? [role] : ["customer"],
 		});
 
@@ -37,13 +39,13 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 				{ label: "Name", value: name },
 				{ label: "Phone", value: phone },
 				{ label: "Email", value: email },
-				{ label: "Password", value: password },
 			],
 			footer: "Thank you for using our service.",
-			type: "NewAccountCreated"
+			type: "NewAccountCreated",
 		});
 
-		sendResponse(res, 201, newUser, "User created successfully");
+		// Redirect to profile creation
+		sendResponse(res, 201, newUser, "User created successfully. Please create your profile.");
 	} catch (error) {
 		handleError(res, error);
 	}
@@ -62,9 +64,12 @@ export const createUserProfile = async (req: Request, res: Response): Promise<vo
 
 		// Add profile details to the user
 		user.profilePicture = profilePicture;
-		const address = { label, street, city, province, postalCode, district, country };
+		const address: IAddress = { label, street, city, province, postalCode, district, country };
 		user.shippingAddresses = user.shippingAddresses ?? [];
 		user.shippingAddresses.push(address);
+
+		// Reward the user with 50 elite points for signup and profile completion
+		await addElitePoints(userId, 50, "Signup and profile completion reward");
 
 		await user.save();
 
@@ -72,7 +77,7 @@ export const createUserProfile = async (req: Request, res: Response): Promise<vo
 			to: user.email,
 			subject: "Profile Created",
 			greeting: `Hi, ${user.name.split(" ")[0]},`,
-			intro: "Your profile has been created successfully.",
+			intro: "Your profile has been created successfully and you have been rewarded with 50 elite points. Thank you for signing up.",
 			details: [
 				{ label: "Name", value: user.name },
 				{ label: "Phone", value: user.phone },
@@ -81,12 +86,13 @@ export const createUserProfile = async (req: Request, res: Response): Promise<vo
 					label: "Address",
 					value: `${address.label}, ${address.street}, ${address.city}, ${address.province}, ${address.postalCode}, ${address.district}, ${address.country}`,
 				},
+				{ label: "Elite Points Rewarded", value: "50" },
 			],
 			footer: "Thank you for using our service.",
-			type: "ProfileUpdated"
+			type: "ProfileUpdated",
 		});
 
-		sendResponse(res, 200, user, "User profile created successfully");
+		sendResponse(res, 200, user, "User profile created and rewarded with elite points successfully");
 	} catch (error) {
 		handleError(res, error);
 	}

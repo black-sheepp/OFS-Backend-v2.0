@@ -56,7 +56,7 @@ export interface IProduct extends Document {
 	promotion?: string;
 	reviews: IReview[];
 	overallRating: number;
-	forGender: "Men" | "Women" | "Unisex";
+	forGender: "Men" | "Women" | "Any";
 	premiumProduct: boolean;
 }
 
@@ -77,21 +77,39 @@ export interface ISalesData extends Document {
 	salesDate: Date;
 }
 
+// Interface for Wallet Transaction
+export interface IWalletTransaction {
+	amount: number;
+	type: "credit" | "debit";
+	description?: string;
+	date: Date;
+}
+
+// Interface for Elite Points History
+export interface IElitePointsHistory {
+	points: number;
+	type: "earn" | "spend";
+	description?: string;
+	date: Date;
+}
+
 // Interface for User schema
 export interface IUser extends Document {
-    name: string;
-    phone: string;
-    email: string;
-    password: string;
-    profilePicture?: string;
-    shippingAddresses?: Array<any>;
+	name: string;
+	phone: string;
+	email: string;
+	password: string;
+	profilePicture?: string;
+	shippingAddresses?: Array<any>;
 	status: "active" | "inactive";
-    roles: Array<string>;
-    wishlist?: Array<mongoose.Schema.Types.ObjectId>;
+	roles: Array<string>;
+	wishlist?: Array<mongoose.Schema.Types.ObjectId>;
 	wallet: number;
 	elitePoints: number;
-    resetPasswordToken?: string;
-    resetPasswordExpires?: Date;
+	walletTransactions: IWalletTransaction[];
+	elitePointsHistory: IElitePointsHistory[];
+	resetPasswordToken?: string;
+	resetPasswordExpires?: Date;
 }
 
 // Interface for Order schema
@@ -111,13 +129,13 @@ export interface IWishlist extends Document {
 
 // Interface for Address schema
 export interface IAddress {
-    label: string;
-    street: string;
-    city: string;
-    province: string;
+	label: string;
+	street: string;
+	city: string;
+	province: string;
 	district: string;
-    postalCode: string;
-    country: string;
+	postalCode: string;
+	country: string;
 }
 
 // Interface for Email Detail
@@ -153,3 +171,14 @@ export type EmailType =
 	| "UpdateNotificationEmailToAdmin"
 	| "DeleteNotificationEmailToAdmin";
 
+
+// Interface for Voucher schema
+interface CreateVoucherParams {
+	code: string;
+	expiryDate: Date;
+	totalVouchers: number;
+	discountType: "percentage" | "fixed";
+	discountValue: number;
+	minPurchaseAmount: number;
+	maxDiscountValue?: number; // Maximum discount value if type is percentage
+}
