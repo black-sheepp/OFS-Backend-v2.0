@@ -16,7 +16,7 @@ export const generateUpdateNotificationEmailToAdminHtml = (
         .content h2 {
             font-size: 18px; /* Increased font size for better readability */
             margin-bottom: 10px;
-            color: #000000;
+            color: #00a6ed;
         }
         .content p {
           font-size: 14px; /* Increased font size for better readability */
