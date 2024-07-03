@@ -11,15 +11,24 @@ export const generateDeleteNotificationEmailToAdminHtml = (
     <!DOCTYPE html>
     <html>
     <head>
-      <style>
-        ${sharedStyles}
-        .header {
-          background-color: #f44336;
-          color: #ffffff;
-          padding: 20px;
-          text-align: center;
-        }
-      </style>
+    <style>
+            ${sharedStyles}
+            .content h2 {
+                font-size: 18px; /* Increased font size for better readability */
+                margin-bottom: 10px;
+                color: #f9172b;
+            }
+            .content p {
+              font-size: 16px; /* Increased font size for better readability */
+              line-height: 1.6;
+              color: #000000;
+            }
+            .details p {
+              font-size: 16px; /* Increased font size for better readability */
+              margin: 8px 0;
+              color: #000000;
+            }
+    </style>
     </head>
     <body>
       <div class="container">

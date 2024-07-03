@@ -29,7 +29,7 @@ export const addInventory = async (req: Request, res: Response): Promise<void> =
 		await sendEmail({
 			to: NODEMAILER_ADMIN_EMAIL,
 			subject: "New Inventory Added",
-			greeting: "Attention!",
+			greeting: "Inventory Added",
 			intro: `A new inventory has been added to the product with the following details:`,
 			details: [
 				{ label: "SKU", value: SKU },
@@ -72,7 +72,7 @@ export const updateInventory = async (req: Request, res: Response): Promise<void
 		await sendEmail({
 			to: NODEMAILER_ADMIN_EMAIL,
 			subject: "Inventory Updated",
-			greeting: "Attention!",
+			greeting: "Inventory Updated",
 			intro: `The inventory of the product has been updated with the following details:`,
 			details: [
 				{ label: "SKU", value: SKU },
@@ -111,7 +111,7 @@ export const deleteInventory = async (req: Request, res: Response): Promise<void
 		await sendEmail({
 			to: NODEMAILER_ADMIN_EMAIL,
 			subject: "Inventory Deleted",
-			greeting: "Attention!",
+			greeting: "Inventory Deleted",
 			intro: `The inventory of the product has been deleted with the following details:`,
 			details: [
 				{ label: "SKU", value: SKU },

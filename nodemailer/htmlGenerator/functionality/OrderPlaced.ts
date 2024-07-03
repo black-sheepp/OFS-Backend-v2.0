@@ -8,11 +8,20 @@ export const generateOrderPlacedHtml = (greeting: string, intro: string, details
     <head>
       <style>
         ${sharedStyles}
-        .header {
-          background-color: #8bc34a;
-          color: #ffffff;
-          padding: 20px;
-          text-align: center;
+        .content h2 {
+            font-size: 18px; /* Increased font size for better readability */
+            margin-bottom: 10px;
+            color: #00f59b;
+        }
+        .content p {
+          font-size: 16px; /* Increased font size for better readability */
+          line-height: 1.6;
+          color: #000000;
+        }
+        .details p {
+          font-size: 16px; /* Increased font size for better readability */
+          margin: 8px 0;
+          color: #000000;
         }
       </style>
     </head>

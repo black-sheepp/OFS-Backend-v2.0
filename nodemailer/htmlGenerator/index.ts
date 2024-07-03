@@ -1,15 +1,15 @@
 import { EmailData } from "../../utils/interface";
 import { generateCreateNotificationEmailToAdminHtml } from "./functionality/CreateNotificationEmailToAdmin";
 import { generateDeleteNotificationEmailToAdminHtml } from "./functionality/DeleteNotificationEmailToAdmin";
-import { generateLoginNotificationHtml } from "./functionality/loginNotification";
+import { generateLoginNotificationHtml } from "./functionality/LoginNotification";
 import { generateLogoutNotificationHtml } from "./functionality/LogoutNotification";
-import { generateNewAccountCreatedHtml } from "./functionality/newAccountCreated";
-import { generateOrderCancelledHtml } from "./functionality/orderCancelled";
-import { generateOrderPlacedHtml } from "./functionality/orderPlaced";
+import { generateNewAccountCreatedHtml } from "./functionality/NewAccountCreated";
+import { generateOrderCancelledHtml } from "./functionality/OrderCancelled";
+import { generateOrderPlacedHtml } from "./functionality/OrderPlaced";
 import { generatePasswordChangedHtml } from "./functionality/PasswordChanged";
-import { generatePasswordResetRequestHtml } from "./functionality/passwordResetRequest";
-import { generatePasswordResetSuccessfulHtml } from "./functionality/passwordResetSuccessful";
-import { generateProfileUpdatedHtml } from "./functionality/profileUpdated";
+import { generatePasswordResetRequestHtml } from "./functionality/PasswordResetRequest";
+import { generatePasswordResetSuccessfulHtml } from "./functionality/PasswordResetSuccessful";
+import { generateProfileUpdatedHtml } from "./functionality/ProfileUpdated";
 import { generateReadNotificationEmailToAdminHtml } from "./functionality/ReadNotificationEmailToAdmin";
 
 // Function to generate HTML content based on email type

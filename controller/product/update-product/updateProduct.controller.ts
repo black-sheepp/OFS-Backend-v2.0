@@ -98,6 +98,32 @@ export const UpdateProductBySKU = async (req: Request, res: Response) => {
 		const updatedProduct = await product.save();
 
 		// send email notification
+		await sendEmail({
+			to: NODEMAILER_ADMIN_EMAIL,
+			subject: "Product Updated",
+			greeting: "Product Updated",
+			intro: `The product has been updated with the following details:`,
+			details: [
+				{ label: "SKU", value: sku },
+				{ label: "Name", value: name },
+				{ label: "Brand", value: existingBrand.name },
+				{ label: "Category", value: existingCategory.name },
+				{ label: "Subcategory", value: subcategory },
+				{ label: "MRP", value: MRP },
+				{ label: "Discount", value: discount },
+				{ label: "Selling Price", value: sellingPrice },
+				{ label: "Colours", value: colours.join(", ") },
+				{ label: "Inventory", value: inventory },
+				{ label: "Care Instructions", value: careInstructions.join(", ") },
+				{ label: "Tags", value: tags.join(", ") },
+				{ label: "Promotion", value: promotion },
+				{ label: "Overall Rating", value: overallRating },
+				{ label: "Gender", value: forGender },
+				{ label: "Premium Product", value: premiumProduct },
+			],
+			footer: "Thank you!",
+			type: "UpdateNotificationEmailToAdmin",
+		});
 
 		sendResponse(res, 200, updatedProduct, "Product updated successfully");
 	} catch (error) {

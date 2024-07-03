@@ -13,11 +13,20 @@ export const generateLoginNotificationHtml = (
     <head>
       <style>
         ${sharedStyles}
-        .header {
-          background-color: #03a9f4;
-          color: #ffffff;
-          padding: 20px;
-          text-align: center;
+        .content h2 {
+            font-size: 18px; /* Increased font size for better readability */
+            margin-bottom: 10px;
+            color: #000000;
+        }
+        .content p {
+          font-size: 16px; /* Increased font size for better readability */
+          line-height: 1.6;
+          color: #000000;
+        }
+        .details p {
+          font-size: 16px; /* Increased font size for better readability */
+          margin: 8px 0;
+          color: #000000;
         }
       </style>
     </head>

@@ -102,6 +102,31 @@ export const createProduct = async (req: Request, res: Response) => {
 		const savedProduct = await newProduct.save();
 
 		// send email notification
+		await sendEmail({
+			to: NODEMAILER_ADMIN_EMAIL,
+			subject: "New Product Created",
+			greeting: "Product Added",
+			intro: `A new product has been created with the following details:`,
+			details: [
+				{ label: "SKU", value: SKU },
+				{ label: "Name", value: name },
+				{ label: "Brand", value: existingBrand.name },
+				{ label: "Category", value: existingCategory.name },
+				{ label: "Subcategory", value: existingSubcategory.name },
+				{ label: "MRP", value: MRP },
+				{ label: "Discount", value: discount },
+				{ label: "Selling Price", value: sellingPrice },
+				{ label: "Colours", value: colours.join(", ") },
+				{ label: "Inventory", value: inventory },
+				{ label: "Care Instructions", value: careInstructions.join(", ") },
+				{ label: "Tags", value: tags.join(", ") },
+				{ label: "Promotion", value: promotion },
+				{ label: "Overall Rating", value: overallRating },
+				{ label: "Gender" , value: forGender}
+			],
+			footer: "Thank you!",
+			type: "CreateNotificationEmailToAdmin",
+		});
 
 		// Send success response
 		sendResponse(res, 201, savedProduct, "Product created successfully");

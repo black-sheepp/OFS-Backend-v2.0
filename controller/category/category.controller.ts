@@ -34,7 +34,7 @@ export const addCategoryWithSubcategories = async (req: Request, res: Response) 
 		await sendEmail({
 			to: NODEMAILER_ADMIN_EMAIL,
 			subject: "New Category Created",
-			greeting: "Attention!",
+			greeting: "Category Added",
 			intro: `A new category has been created with the following details:`,
 			details: [
 				{ label: "Name", value: name },
@@ -84,7 +84,7 @@ export const addSubcategoryToCategory = async (req: Request, res: Response) => {
 		await sendEmail({
 			to: NODEMAILER_ADMIN_EMAIL,
 			subject: "Subcategories Added",
-			greeting: "Attention!",
+			greeting: "Subcategories Added",
 			intro: `Subcategories have been added to the category with the following details:`,
 			details: [
 				{ label: "Category", value: category.name },
