@@ -4,7 +4,7 @@ import CategoryModel from "../../models/product/category/categorySchema";
 import { ICategory, ISubcategory } from "../../utils/interface";
 import { sendResponse, handleError } from "../../utils/responseUtil";
 import dotenv from "dotenv";
-import { sendEmail } from "../../utils/emailUtil";
+import { sendEmail } from "../../nodemailer/emailUtil";
 
 dotenv.config();
 
@@ -39,10 +39,17 @@ export const addCategoryWithSubcategories = async (req: Request, res: Response) 
 			details: [
 				{ label: "Name", value: name },
 				{ label: "Description", value: description },
-				{ label: "Subcategories", value: subcategories.map((subcategory: ISubcategory) => subcategory.name).join(", ") },
-				{ label: "Subcategories Description", value: subcategories.map((subcategory: ISubcategory) => subcategory.description).join(", ") }
+				{
+					label: "Subcategories",
+					value: subcategories.map((subcategory: ISubcategory) => subcategory.name).join(", "),
+				},
+				{
+					label: "Subcategories Description",
+					value: subcategories.map((subcategory: ISubcategory) => subcategory.description).join(", "),
+				},
 			],
 			footer: "Thank you!",
+			type: "CreateNotificationEmailToAdmin"
 		});
 
 		sendResponse(res, 201, savedCategory, "Category created successfully");
@@ -53,25 +60,25 @@ export const addCategoryWithSubcategories = async (req: Request, res: Response) 
 
 // Add multiple subcategory to a category
 export const addSubcategoryToCategory = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { subcategories } = req.body;
+	const { id } = req.params;
+	const { subcategories } = req.body;
 
-    try {
-        const category = await CategoryModel.findById(id);
+	try {
+		const category = await CategoryModel.findById(id);
 
-        if (!category) {
-            return sendResponse(res, 404, null, "Category not found");
-        }
+		if (!category) {
+			return sendResponse(res, 404, null, "Category not found");
+		}
 
-        const newSubcategories: ISubcategory[] = subcategories.map((subcategory: ISubcategory) => ({
-            link: subcategory.link,
-            name: subcategory.name,
-            description: subcategory.description,
-        }));
+		const newSubcategories: ISubcategory[] = subcategories.map((subcategory: ISubcategory) => ({
+			link: subcategory.link,
+			name: subcategory.name,
+			description: subcategory.description,
+		}));
 
-        category.subcategories.push(...newSubcategories);
+		category.subcategories.push(...newSubcategories);
 
-        const updatedCategory = await category.save();
+		const updatedCategory = await category.save();
 
 		// Send email notification
 		await sendEmail({
@@ -81,16 +88,23 @@ export const addSubcategoryToCategory = async (req: Request, res: Response) => {
 			intro: `Subcategories have been added to the category with the following details:`,
 			details: [
 				{ label: "Category", value: category.name },
-				{ label: "Subcategories", value: newSubcategories.map((subcategory: ISubcategory) => subcategory.name).join(", ") },
-				{ label: "Subcategories Description", value: newSubcategories.map((subcategory: ISubcategory) => subcategory.description).join(", ") }
+				{
+					label: "Subcategories",
+					value: newSubcategories.map((subcategory: ISubcategory) => subcategory.name).join(", "),
+				},
+				{
+					label: "Subcategories Description",
+					value: newSubcategories.map((subcategory: ISubcategory) => subcategory.description).join(", "),
+				},
 			],
 			footer: "Thank you!",
+			type: "UpdateNotificationEmailToAdmin"
 		});
 
-        sendResponse(res, 200, updatedCategory, "Subcategories added successfully");
-    } catch (error) {
-        handleError(res, error);
-    }
+		sendResponse(res, 200, updatedCategory, "Subcategories added successfully");
+	} catch (error) {
+		handleError(res, error);
+	}
 };
 
 // Get all categories

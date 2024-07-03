@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Brand from "../../models/product/brand/brandSchema";
 import { sendResponse, handleError } from "../../utils/responseUtil";
 import dotenv from "dotenv";
-import { sendEmail } from "../../utils/emailUtil";
+import { sendEmail } from "../../nodemailer/emailUtil";
 
 dotenv.config();
 
@@ -33,16 +33,22 @@ export const createBrand = async (req: Request, res: Response): Promise<void> =>
 		// Send email notification
 		await sendEmail({
 			to: NODEMAILER_ADMIN_EMAIL,
-			subject: "New Brand Created",
-			greeting: "Attention!",
-			intro: `A new brand has been created with the following details:`,
-			details: [
-				{ label: "Name", value: name },
-				{ label: "Description", value: description },
-				{ label: "Link", value: link },
-			],
-			footer: "Thank you!",
-		});
+			subject : "New Brand Created",
+			greeting : "Attention!",
+			intro : "A new brand has been created with the following details:",
+			details : [{
+				label: "Name",
+				value: name
+			}, {
+				label: "Description",
+				value: description
+			}, {
+				label: "Link",
+				value: link
+			}],
+			footer : "Thank you!",
+			type : "CreateNotificationEmailToAdmin",
+		})
 
 		sendResponse(res, 201, newBrand, "Brand created successfully");
 	} catch (error) {
@@ -100,6 +106,7 @@ export const updateBrand = async (req: Request, res: Response): Promise<void> =>
 				{ label: "Link", value: link },
 			],
 			footer: "Thank you!",
+			type: "UpdateNotificationEmailToAdmin",
 		});
 
 		sendResponse(res, 200, brand, "Brand updated successfully");
@@ -132,14 +139,15 @@ export const deleteBrand = async (req: Request, res: Response): Promise<void> =>
 		await sendEmail({
 			to: NODEMAILER_ADMIN_EMAIL,
 			subject: "Brand Deleted",
-			greeting: "Attention!",
-			intro: `The brand has been deleted with the following details:`,
+			greeting: "Warning!",
+			intro: "The brand has been deleted with the following details:",
 			details: [
 				{ label: "Name", value: brand.name },
 				{ label: "Description", value: brand.description },
 				{ label: "Link", value: brand.link },
 			],
-			footer: "Thank you!",
+			footer: "Brand Deleted Successfuly",
+			type: "DeleteNotificationEmailToAdmin"
 		});
 
 		sendResponse(res, 200, null, "Brand deleted successfully");

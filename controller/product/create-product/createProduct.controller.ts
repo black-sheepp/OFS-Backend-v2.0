@@ -4,6 +4,12 @@ import BrandModel from "../../../models/product/brand/brandSchema";
 import CategoryModel from "../../../models/product/category/categorySchema";
 import { IProduct } from "../../../utils/interface";
 import { sendResponse, handleError } from "../../../utils/responseUtil";
+import dotenv from "dotenv";
+import { sendEmail } from "../../../nodemailer/emailUtil";
+
+dotenv.config();
+
+const NODEMAILER_ADMIN_EMAIL = process.env.NODEMAILER_ADMIN_EMAIL ?? "";
 
 // Controller function to create a new product
 export const createProduct = async (req: Request, res: Response) => {
@@ -94,6 +100,8 @@ export const createProduct = async (req: Request, res: Response) => {
 
 		// Save the product to the database
 		const savedProduct = await newProduct.save();
+
+		// send email notification
 
 		// Send success response
 		sendResponse(res, 201, savedProduct, "Product created successfully");

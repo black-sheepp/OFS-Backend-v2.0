@@ -119,3 +119,37 @@ export interface IAddress {
     postalCode: string;
     country: string;
 }
+
+// Interface for Email Detail
+export interface EmailDetail {
+	label: string;
+	value: string;
+}
+
+// Interface for Email Data
+export interface EmailData {
+	to: string;
+	subject: string;
+	greeting: string;
+	intro: string;
+	details: EmailDetail[];
+	footer: string;
+	type: EmailType;
+}
+
+// Email Type
+export type EmailType =
+	| "NewAccountCreated"
+	| "ProfileUpdated"
+	| "PasswordChanged"
+	| "PasswordResetRequest"
+	| "PasswordResetSuccessful"
+	| "OrderPlaced"
+	| "OrderCancelled"
+	| "LoginNotification"
+	| "LogoutNotification"
+	| "CreateNotificationEmailToAdmin"
+	| "ReadNotificationEmailToAdmin"
+	| "UpdateNotificationEmailToAdmin"
+	| "DeleteNotificationEmailToAdmin";
+

@@ -3,7 +3,7 @@ import { sendResponse, handleError } from "../../utils/responseUtil";
 import userSchema from "../../models/user/userSchema";
 import { IAddress, IUser } from "../../utils/interface";
 import bcrypt from "bcryptjs"; // For password hashing
-import { sendEmail } from "../../utils/emailUtil";
+import { sendEmail } from "../../nodemailer/emailUtil";
 import crypto from "crypto";
 
 // Controller function to update a user profile
@@ -29,8 +29,12 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
 			subject: "Profile Updated",
 			greeting: `Hi, ${user.name.split(" ")[0]},`,
 			intro: "Your profile has been updated successfully.",
-			details: [],
+			details: [
+				{ label: "Name: ", value: name },
+				{ label: "Phone: ", value: phone },
+			],
 			footer: "Thank you for using our service.",
+			type: "ProfileUpdated"
 		});
 
 		sendResponse(res, 200, user, "User profile updated successfully");
@@ -65,6 +69,9 @@ export const updateAddress = async (req: Request, res: Response): Promise<void> 
 			address.country = country;
 
 			await user.save();
+
+			// send email notification
+
 			return sendResponse(res, 200, user, "Address updated successfully");
 		}
 
@@ -106,6 +113,7 @@ export const requestPasswordReset = async (req: Request, res: Response): Promise
 			intro: message,
 			details: [{ label: "Reset Link", value: resetUrl }],
 			footer: "If you did not request a password reset, please ignore this email.",
+			type: "PasswordResetRequest"
 		});
 
 		sendResponse(res, 200, null, "Password reset link sent to email");
@@ -158,6 +166,7 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
 				{ label: "New Password", value: newPassword },
 			],
 			footer: "If you did not request a password reset, please contact us immediately.",
+			type: "PasswordResetSuccessful"
 		});
 
 		sendResponse(res, 200, null, "Password has been reset successfully");
