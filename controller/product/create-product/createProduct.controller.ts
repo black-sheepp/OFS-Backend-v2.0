@@ -105,7 +105,7 @@ export const createProduct = async (req: Request, res: Response) => {
 		await sendEmail({
 			to: NODEMAILER_ADMIN_EMAIL,
 			subject: "New Product Created",
-			greeting: "Product Added",
+			greeting: "Notification : Product Added",
 			intro: `A new product has been created with the following details:`,
 			details: [
 				{ label: "SKU", value: SKU },

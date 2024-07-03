@@ -45,7 +45,9 @@ export const generateNewAccountCreatedHtml = (
         </div>
         <div class="footer">
           <p>${footer}</p>
-          <p>&copy; ${new Date().getFullYear()} | OFS</p>
+          <P>Thank you for using OFS.</p>
+          <P>Sincerely,</p>
+          <P>Online Fashion Store</p>
         </div>
       </div>
     </body>

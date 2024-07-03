@@ -101,7 +101,7 @@ export const UpdateProductBySKU = async (req: Request, res: Response) => {
 		await sendEmail({
 			to: NODEMAILER_ADMIN_EMAIL,
 			subject: "Product Updated",
-			greeting: "Product Updated",
+			greeting: "Notification : Product Updated",
 			intro: `The product has been updated with the following details:`,
 			details: [
 				{ label: "SKU", value: sku },

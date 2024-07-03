@@ -5,13 +5,14 @@ export const sharedStyles = `
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #edf2f4;
   }
   .container {
     width: 100%;
     max-width: 700px;
     margin: 20px auto;
     background-color: #ffffff;
-    border-radius: 8px;
+    border-radius: 0px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     overflow: hidden;
   }
@@ -30,8 +31,7 @@ export const sharedStyles = `
   }
   .footer {
     padding: 14px;
-    background-color: #faf0ca; /* Always red */
-    text-align: center;
+    text-align: left;
     color: #000000;
   }
   .footer p {

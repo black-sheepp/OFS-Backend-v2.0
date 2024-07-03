@@ -34,7 +34,7 @@ export const createBrand = async (req: Request, res: Response): Promise<void> =>
 		await sendEmail({
 			to: NODEMAILER_ADMIN_EMAIL,
 			subject : "New Brand Created",
-			greeting : "Brand Added",
+			greeting : "Notification : Brand Added",
 			intro : "A new brand has been created with the following details:",
 			details : [{
 				label: "Name",
@@ -98,7 +98,7 @@ export const updateBrand = async (req: Request, res: Response): Promise<void> =>
 		await sendEmail({
 			to: NODEMAILER_ADMIN_EMAIL,
 			subject: "Brand Updated",
-			greeting: "Brand Updated",
+			greeting: "Notification : Brand Updated",
 			intro: `The brand has been updated with the following details:`,
 			details: [
 				{ label: "Name", value: name },
@@ -139,7 +139,7 @@ export const deleteBrand = async (req: Request, res: Response): Promise<void> =>
 		await sendEmail({
 			to: NODEMAILER_ADMIN_EMAIL,
 			subject: "Brand Deleted",
-			greeting: "Brand Deleted",
+			greeting: "Notification : Brand Deleted",
 			intro: "The brand has been deleted with the following details:",
 			details: [
 				{ label: "Name", value: brand.name },
