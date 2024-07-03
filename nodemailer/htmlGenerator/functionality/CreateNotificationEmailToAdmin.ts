@@ -44,7 +44,7 @@ export const generateCreateNotificationEmailToAdminHtml = (
         </div>
         <div class="footer">
           <p>${footer}</p>
-          <P>Thank you for using OFS.</P>
+          <br/>
           <P>Sincerely,</p>
           <P>Online Fashion Store</p>
         </div>
