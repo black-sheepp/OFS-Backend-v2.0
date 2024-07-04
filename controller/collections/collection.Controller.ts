@@ -4,7 +4,12 @@ import { ICollectionDocument } from "../../utils/interface";
 import { sendResponse, handleError } from "../../utils/responseUtil";
 import productSchema from "../../models/product/productSchema";
 import Product from "../../models/product/productSchema"; // Import the Product model
+import { sendEmail } from "../../nodemailer/emailUtil";
+import dotenv from "dotenv";
 
+dotenv.config();
+
+const NODEMAILER_ADMIN_EMAIL = process.env.NODEMAILER_ADMIN_EMAIL ?? "";
 // Controller function to create a new collection
 export const createCollection = async (req: Request, res: Response) => {
 	try {
@@ -27,6 +32,23 @@ export const createCollection = async (req: Request, res: Response) => {
 		}
 
 		await newCollection.save();
+
+		await sendEmail({
+			to: NODEMAILER_ADMIN_EMAIL,
+			subject: "New Collection Created",
+			greeting: "Notification : Collection Added",
+			intro: `A new collection has been created with the following details:`,
+			details: [
+				{ label: "Name", value: name },
+				{ label: "Description", value: description },
+				{
+					label: "Products",
+					value: productSKUs.join(", "),
+				},
+			],
+			footer: "Thank you!",
+			type: "CreateNotificationEmailToAdmin",
+		});
 
 		sendResponse(res, 201, { collection: newCollection }, "Collection created successfully");
 	} catch (error) {
