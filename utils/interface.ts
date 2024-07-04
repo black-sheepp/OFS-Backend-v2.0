@@ -182,3 +182,27 @@ interface CreateVoucherParams {
 	minPurchaseAmount: number;
 	maxDiscountValue?: number; // Maximum discount value if type is percentage
 }
+
+// Interface for Voucher schema
+export interface IVoucher extends Document {
+	code: string;
+	expiryDate: Date;
+	totalVouchers: number;
+	usedVouchers: number;
+	discountType: "percentage" | "fixed";
+	discountValue: number;
+	minPurchaseAmount: number;
+	maxDiscountValue?: number; // Maximum discount value if type is percentage
+}
+
+// Interface for Collection schema
+export interface ICollection {
+    name: string;
+    products: string[];
+	description: string;
+    isActive: boolean;
+}
+
+export interface ICollectionDocument extends ICollection, Document {
+    addProductBySKU(sku: string): Promise<void>;
+}

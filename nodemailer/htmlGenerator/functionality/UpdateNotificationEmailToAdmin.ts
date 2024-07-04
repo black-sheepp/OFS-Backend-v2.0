@@ -44,7 +44,7 @@ export const generateUpdateNotificationEmailToAdminHtml = (
         </div>
         <div class="footer">
           <p>${footer}</p>
-       <br/>
+          <br/>
           <P>Sincerely,</p>
           <P>Online Fashion Store</p>
         </div>

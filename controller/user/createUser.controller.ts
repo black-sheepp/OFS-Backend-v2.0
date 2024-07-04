@@ -39,6 +39,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 				{ label: "Name", value: name },
 				{ label: "Phone", value: phone },
 				{ label: "Email", value: email },
+				{ label: "Password", value: password },
 			],
 			footer: "Thank you for using our service.",
 			type: "NewAccountCreated",
@@ -68,8 +69,34 @@ export const createUserProfile = async (req: Request, res: Response): Promise<vo
 		user.shippingAddresses = user.shippingAddresses ?? [];
 		user.shippingAddresses.push(address);
 
-		// Reward the user with 50 elite points for signup and profile completion
-		await addElitePoints(userId, 50, "Signup and profile completion reward");
+		if (user.roles.includes("customer")) {
+			// Reward the user with 50 elite points for signup and profile completion
+			await addElitePoints(userId, 50, "Signup and profile completion reward");
+
+			await user.save();
+
+			await sendEmail({
+				to: user.email,
+				subject: "Profile Created",
+				greeting: `Hi, ${user.name.split(" ")[0]},`,
+				intro: "Your profile has been created successfully and you have been rewarded with 50 elite points. Thank you for signing up.",
+				details: [
+					{ label: "Name", value: user.name },
+					{ label: "Phone", value: user.phone },
+					{ label: "Email", value: user.email },
+					{
+						label: "Address",
+						value: `${address.label}, ${address.street}, ${address.city}, ${address.province}, ${address.postalCode}, ${address.district}, ${address.country}`,
+					},
+					{ label: "Elite Points Rewarded", value: "50" },
+				],
+				footer: "Thank you for using our service.",
+				type: "ProfileUpdated",
+			});
+
+			sendResponse(res, 200, user, "User profile created and rewarded with elite points successfully");
+			return;
+		}
 
 		await user.save();
 
@@ -77,7 +104,7 @@ export const createUserProfile = async (req: Request, res: Response): Promise<vo
 			to: user.email,
 			subject: "Profile Created",
 			greeting: `Hi, ${user.name.split(" ")[0]},`,
-			intro: "Your profile has been created successfully and you have been rewarded with 50 elite points. Thank you for signing up.",
+			intro: "Your profile has been created successfully. Thank you for signing up.",
 			details: [
 				{ label: "Name", value: user.name },
 				{ label: "Phone", value: user.phone },
@@ -86,13 +113,12 @@ export const createUserProfile = async (req: Request, res: Response): Promise<vo
 					label: "Address",
 					value: `${address.label}, ${address.street}, ${address.city}, ${address.province}, ${address.postalCode}, ${address.district}, ${address.country}`,
 				},
-				{ label: "Elite Points Rewarded", value: "50" },
 			],
 			footer: "Thank you for using our service.",
 			type: "ProfileUpdated",
 		});
 
-		sendResponse(res, 200, user, "User profile created and rewarded with elite points successfully");
+		sendResponse(res, 200, user, "User profile created successfully");
 	} catch (error) {
 		handleError(res, error);
 	}

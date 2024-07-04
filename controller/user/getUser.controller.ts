@@ -21,3 +21,17 @@ export const getUserProfile = async (req: Request, res: Response): Promise<void>
 		handleError(res, error);
 	}
 };
+
+// Controller function to get all users
+export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const users = await userSchema.find();
+		if (!users) {
+			return sendResponse(res, 404, null, "No users found");
+		}
+
+		sendResponse(res, 200, users, "Users retrieved successfully");
+	} catch (error) {
+		handleError(res, error);
+	}
+};

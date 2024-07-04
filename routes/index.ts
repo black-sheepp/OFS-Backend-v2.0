@@ -8,6 +8,7 @@ import wishlistRoute from "./wishlist";
 import cartRoute from "./cart";
 import orderRoute from "./order";
 import inventoryRoutes from "./inventory";
+import collectionRoutes from "./collection";
 
 const router: Router = express.Router();
 
@@ -23,5 +24,6 @@ router.use("/wishlist", wishlistRoute);
 router.use("/cart", cartRoute);
 router.use("/order", orderRoute);
 router.use("/inventory", inventoryRoutes);
+router.use("/collection", collectionRoutes)
 
 export default router;
