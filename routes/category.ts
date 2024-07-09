@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addCategoryWithSubcategories, addSubcategoryToCategory, getAllCategories, getAllSubcategories } from "../controller/category/category.controller";
+import { addCategoryWithSubcategories, addSubcategoryToCategory, getAllCategories, getAllSubcategories, getProductsByCategoryAndSubcategoryName, getAllProductsofSubcategoryById } from "../controller/category/category.controller";
 
 const router = Router();
 
@@ -15,4 +15,11 @@ router.get("/get-categories", getAllCategories);
 // get all subcategories of a category
 router.get("/get-subcategories/:id", getAllSubcategories);
 
+// get all products of a subcategory by its id
+router.get("/products-by-subcategory-id/:id", getAllProductsofSubcategoryById);
+
+// get all products of a subcategory by its name
+router.get("/products-by-subcategory-name/:categoryName/:subcategoryName", getProductsByCategoryAndSubcategoryName);
+
 export default router;
+

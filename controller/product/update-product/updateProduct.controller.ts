@@ -114,7 +114,7 @@ export const UpdateProductBySKU = async (req: Request, res: Response) => {
 				{ label: "Selling Price", value: sellingPrice },
 				{ label: "Colours", value: colours.join(", ") },
 				{ label: "Inventory", value: inventory },
-				{ label: "Care Instructions", value: careInstructions.join(", ") },
+				{ label: "Care Instructions", value: careInstructions },
 				{ label: "Tags", value: tags.join(", ") },
 				{ label: "Promotion", value: promotion },
 				{ label: "Overall Rating", value: overallRating },

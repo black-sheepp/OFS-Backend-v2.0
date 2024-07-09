@@ -1,6 +1,16 @@
 import { Router } from "express";
 import { createProduct } from "../controller/product/create-product/createProduct.controller";
-import { getAllProducts, getProductsByBrand, getProductsByCategory, getProductsByDiscount, getProductsByPriceRange, getProductsByRating, searchProductBySKU } from "../controller/product/get-product/getProduct.controller";
+import {
+	getAllProducts,
+	getProductsByBrand,
+	getProductsByCategory,
+	getProductsByDiscount,
+	getProductsByPriceRange,
+	getProductsByRating,
+	searchProductBySKU,
+	searchProductByID,
+    getSimilarProductsByCategoryAndSubcategory,
+} from "../controller/product/get-product/getProduct.controller";
 import { UpdateProductBySKU } from "../controller/product/update-product/updateProduct.controller";
 import { searchProducts, validateSearchKeyword } from "../controller/product/get-product/searchProducts.contoller";
 
@@ -12,8 +22,14 @@ router.post("/create-product", createProduct);
 // Route to search product by sku
 router.get("/search-product/:sku", searchProductBySKU);
 
+// Route to get a product by id
+router.get("/get-product/:id", searchProductByID);
+
 // Route to update a product on sku search
 router.put("/update-product/:sku", UpdateProductBySKU);
+
+// Route to get similar products based on category and subcategory
+router.get("/get-similar-products/:category/:subcategory/:currentProductId", getSimilarProductsByCategoryAndSubcategory);
 
 // Route to get all products
 router.get("/get-all-products", getAllProducts);
@@ -35,6 +51,5 @@ router.get("/get-products-by-rating", getProductsByRating);
 
 // Route to get all products by discount
 router.get("/get-products-by-discount/:order", getProductsByDiscount);
-
 
 export default router;

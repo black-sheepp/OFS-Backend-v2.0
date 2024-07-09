@@ -1,10 +1,12 @@
 // controllers/categoryController.ts
 import { Request, Response } from "express";
 import CategoryModel from "../../models/product/category/categorySchema";
+import ProductModel from "../../models/product/productSchema"; // Import the ProductModel
 import { ICategory, ISubcategory } from "../../utils/interface";
 import { sendResponse, handleError } from "../../utils/responseUtil";
 import dotenv from "dotenv";
 import { sendEmail } from "../../nodemailer/emailUtil";
+import category from "../../routes/category";
 
 dotenv.config();
 
@@ -49,7 +51,7 @@ export const addCategoryWithSubcategories = async (req: Request, res: Response) 
 				},
 			],
 			footer: "Thank you!",
-			type: "CreateNotificationEmailToAdmin"
+			type: "CreateNotificationEmailToAdmin",
 		});
 
 		sendResponse(res, 201, savedCategory, "Category created successfully");
@@ -98,7 +100,7 @@ export const addSubcategoryToCategory = async (req: Request, res: Response) => {
 				},
 			],
 			footer: "Thank you!",
-			type: "UpdateNotificationEmailToAdmin"
+			type: "UpdateNotificationEmailToAdmin",
 		});
 
 		sendResponse(res, 200, updatedCategory, "Subcategories added successfully");
@@ -132,5 +134,53 @@ export const getAllSubcategories = async (req: Request, res: Response) => {
 		sendResponse(res, 200, category.subcategories, "Subcategories fetched successfully");
 	} catch (error) {
 		handleError(res, error);
+	}
+};
+
+// Get all products of a subcategory by its name
+export const getProductsByCategoryAndSubcategoryName = async (req: Request, res: Response) => {
+	const { categoryName, subcategoryName } = req.params;
+
+	try {
+		// Find subcategory by name of the category by name - this is a nested query
+		const category = await CategoryModel.findOne({ name: categoryName });
+
+		if (!category) {
+			return sendResponse(res, 404, null, "Category not found");
+		}
+
+		// Find subcategory by name
+		const subcategory = category.subcategories.find((subcategory) => subcategory.name === subcategoryName);
+
+		// Find products by subcategory id
+		const products = await ProductModel.find({ subcategory: subcategory?._id });
+
+		sendResponse(res, 200, products, "Products fetched successfully");
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+// Controller function to get all products of a subcategory by its id
+export const getAllProductsofSubcategoryById = async (req: Request, res: Response) => {
+	const { id } = req.params;
+
+	try {
+		// Fetch the subcategory by ID
+		const category = await CategoryModel.findOne({ "subcategories._id": id }, { "subcategories.$": 1 }).exec();
+		if (!category) {
+			return sendResponse(res, 404, null, "Subcategory not found");
+		}
+
+		const subcategory = category.subcategories[0];
+		const subcategoryName = subcategory.name;
+
+		// Fetch products by subcategory ID
+		const products = await ProductModel.find({ subcategory: subcategory._id }).exec();
+
+		// Respond with the products and subcategory name
+		return sendResponse(res, 200, { subcategoryName, products }, "Products fetched successfully");
+	} catch (error) {
+		return handleError(res, error);
 	}
 };

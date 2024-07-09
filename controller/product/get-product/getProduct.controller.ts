@@ -24,6 +24,27 @@ export const searchProductBySKU = async (req: Request, res: Response) => {
 	}
 };
 
+// Controller function to get a product details by ID params
+export const searchProductByID = async (req: Request, res: Response) => {
+	const { id } = req.params;
+
+	if (!id) {
+		return sendResponse(res, 400, null, "ID parameter is required");
+	}
+
+	try {
+		const product = await ProductModel.findById(id);
+
+		if (!product) {
+			return sendResponse(res, 404, null, "Product not found");
+		}
+
+		return sendResponse(res, 200, product, "Product found");
+	} catch (error: any) {
+		return handleError(res, error);
+	}
+};
+
 // Controller function to get product list
 export const getAllProducts = async (req: Request, res: Response): Promise<void> => {
 	try {
@@ -143,3 +164,14 @@ export const getProductsByDiscount = async (req: Request, res: Response): Promis
 	}
 };
 
+// Get similar products based on category and subcategory
+export const getSimilarProductsByCategoryAndSubcategory = async (req: Request, res: Response): Promise<void> => {
+	const { category, subcategory, currentProductId } = req.params;
+
+	try {
+		const products = await Product.find({ category, subcategory, _id: { $ne: currentProductId } }).limit(4);
+		return sendResponse(res, 200, products, "Top 4 similar products found");
+	} catch (error: any) {
+		return handleError(res, error);
+	}
+};

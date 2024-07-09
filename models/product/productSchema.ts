@@ -30,14 +30,14 @@ const ProductSchema: Schema = new Schema(
 		images: { type: [String], required: true },
 		colours: { type: [String], required: true },
 		featured: { type: Boolean, default: false },
+		premiumProduct: { type: Boolean, default: false },
 		inventory: [InventorySchema],
 		careInstructions: { type: String, required: true },
 		tags: { type: [String], required: true, index: true },
 		promotion: { type: String },
 		reviews: [ReviewSchema],
 		overallRating: { type: Number, default: 0, min: 0, max: 5 },
-		forGender: { type: String, enum: ["Men", "Women", "Unisex"], required: true },
-		premiumProduct: { type: Boolean, default: false },
+		forGender: { type: String, enum: ["Men", "Women", "Any"], required: true },
 	},
 	{ timestamps: true }
 );
