@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCollection, getAllCollections, getCollectionById } from "../controller/collections/collection.Controller";
+import { createCollection, deleteCollectionById, getAllCollections, getCollectionById } from "../controller/collections/collection.Controller";
 
 const router = Router();
 
@@ -11,5 +11,8 @@ router.get("/get-all-collections", getAllCollections);
 
 // Route to get collection details by its id
 router.get("/get-collection/:collectionId", getCollectionById);
+
+// Routes to delete a collection with its id
+router.delete("/delete-collection/:collectionId", deleteCollectionById);
 
 export default router;

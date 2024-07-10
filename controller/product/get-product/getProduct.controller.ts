@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import ProductModel from "../../../models/product/productSchema";
 import Product from "../../../models/product/productSchema";
+import Brand from "../../../models/product/brand/brandSchema";
+import Category from "../../../models/product/category/categorySchema";
 import { sendResponse, handleError } from "../../../utils/responseUtil";
 
 // Controller function to search for a product by SKU
@@ -48,20 +50,52 @@ export const searchProductByID = async (req: Request, res: Response) => {
 // Controller function to get product list
 export const getAllProducts = async (req: Request, res: Response): Promise<void> => {
 	try {
-        const products = await Product.find()
-            .populate("brand")
-            .populate("category")
-            .populate({
-                path: "category",
-                populate: {
-                    path: "subcategories",
-                    model: "Category", // Specify the model name for subcategories
-                },
-            })
-        return sendResponse(res, 200, products, "Products found");
-    } catch (error: any) {
-        return handleError(res, error);
-    }
+		const products = await Product.find()
+			.populate("brand")
+			.populate("category")
+			.populate({
+				path: "category",
+				populate: {
+					path: "subcategories",
+					model: "Category", // Specify the model name for subcategories
+				},
+			});
+		return sendResponse(res, 200, products, "Products found");
+	} catch (error: any) {
+		return handleError(res, error);
+	}
+};
+
+// controller function to get Brands, Category, Subcategory, Products Details by Product ID
+export const getBrandsCategoriesSubcategoriesProductsDetails = async (req: Request, res: Response): Promise<void> => {
+	const { id } = req.params;
+
+	try {
+		// Find product by id
+		const product = await Product.findById(id).exec();
+
+		if (!product) {
+			return sendResponse(res, 404, null, "Product not found");
+		}
+
+		// Find brand by id
+		const brand = await Brand.findById(product.brand).exec();
+
+		if (!brand) {
+			return sendResponse(res, 404, null, "Brand not found");
+		}
+
+		// Find category by id
+		const category = await Category.findById(product.category).exec();
+
+		if (!category) {
+			return sendResponse(res, 404, null, "Category not found");
+		}
+
+		return sendResponse(res, 200, { product, brand, category }, "Product, Brand, Category found");
+	} catch (error: any) {
+		return handleError(res, error);
+	}
 };
 
 // Controller function to get all products by category

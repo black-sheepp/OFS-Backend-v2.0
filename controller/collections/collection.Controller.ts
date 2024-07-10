@@ -133,3 +133,35 @@ export const getCollectionById = async (req: Request, res: Response) => {
 		handleError(res, error);
 	}
 };
+
+
+// contorller function to delete a collection by its id
+export const deleteCollectionById = async (req: Request, res: Response) => {
+	const { collectionId } = req.params;
+
+	try {
+		const collection = await Collection.findByIdAndDelete(collectionId);
+		if (!collection) {
+			return sendResponse(res, 404, null, "Collection not found");
+		}
+
+		// Send notification email to admin
+		await sendEmail({
+			to: NODEMAILER_ADMIN_EMAIL,
+			subject: "Collection Deleted",
+			greeting: "Notification : Collection Deleted",
+			intro: `A collection has been deleted with the following details:`,
+			details: [
+				{ label: "Name", value: collection.name },
+				{ label: "Description", value: collection.description },
+				{ label: "Products", value: collection.products.join(", ")}
+			],
+			footer: "Thank you!",
+			type: "DeleteNotificationEmailToAdmin",
+		});
+
+		sendResponse(res, 200, null, "Collection deleted successfully");
+	} catch (error) {
+		handleError(res, error);
+	}
+};

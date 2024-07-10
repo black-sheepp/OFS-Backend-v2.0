@@ -10,6 +10,7 @@ import {
 	searchProductBySKU,
 	searchProductByID,
     getSimilarProductsByCategoryAndSubcategory,
+	getBrandsCategoriesSubcategoriesProductsDetails,
 } from "../controller/product/get-product/getProduct.controller";
 import { UpdateProductBySKU } from "../controller/product/update-product/updateProduct.controller";
 import { searchProducts, validateSearchKeyword } from "../controller/product/get-product/searchProducts.contoller";
@@ -23,7 +24,7 @@ router.post("/create-product", createProduct);
 router.get("/search-product/:sku", searchProductBySKU);
 
 // Route to get a product by id
-router.get("/get-product/:id", searchProductByID);
+router.get("/get-product/:id", getBrandsCategoriesSubcategoriesProductsDetails);
 
 // Route to update a product on sku search
 router.put("/update-product/:sku", UpdateProductBySKU);
