@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, createUserProfile } from "../controller/user/createUser.controller";
+import { createUser, createUserProfile, loginUser } from "../controller/user/createUser.controller";
 import { getAllUsers, getUserProfile } from "../controller/user/getUser.controller";
 import { requestPasswordReset, resetPassword, updateAddress, updateUserProfile } from "../controller/user/updateUser.controller";
 
@@ -10,6 +10,9 @@ router.post("/create-user", createUser)
 
 // create a user profile
 router.post("/create-user-profile/:userId", createUserProfile)
+
+// login a user
+router.post("/login-user", loginUser)
 
 // update user profile
 router.put("/update-user-profile/:userId", updateUserProfile)

@@ -47,19 +47,6 @@ const UserSchema: Schema = new Schema(
     { timestamps: true } // Automatically add createdAt and updatedAt timestamps
 );
 
-// Hash the password before saving the user
-UserSchema.pre("save", async function (next) {
-    const user = this as unknown as IUser;
-    if (!user.isModified("password")) { // If password is not modified, continue to next middleware
-        return next();
-    }
-
-    const salt = await bcrypt.genSalt(10); // Generate a salt with 10 rounds
-    const hashedPassword = await bcrypt.hash(user.password, salt); // Hash the password with the generated salt
-    user.password = hashedPassword; // Set the user's password to the hashed password
-    next(); // Continue to the next middleware
-});
-
 UserSchema.index({ email: 1 }); // Create an index on the email field for faster queries
 
 // Method to add a wallet transaction

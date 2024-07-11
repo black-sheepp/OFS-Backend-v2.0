@@ -52,6 +52,27 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 	}
 };
 
+// Controller function to login a user
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await userSchema.findOne({ email });
+        if (!user) {
+            return sendResponse(res, 404, null, "User not found");
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return sendResponse(res, 400, null, "Invalid credentials");
+        }
+
+        sendResponse(res, 200, user, "User logged in successfully");
+    } catch (error) {
+        handleError(res, error);
+    }
+}
+
 // Controller function to create a user profile after creating a user
 export const createUserProfile = async (req: Request, res: Response): Promise<void> => {
 	const { userId } = req.params;

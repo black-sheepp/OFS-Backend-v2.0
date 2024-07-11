@@ -10,8 +10,6 @@
   "author": "black-sheepp",
   "license": "ISC",
   "devDependencies": {
-    "@types/bcrypt": "^5.0.2",
-    "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
@@ -30,7 +28,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
