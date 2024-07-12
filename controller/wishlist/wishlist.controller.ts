@@ -1,37 +1,42 @@
+// src/controllers/wishlistController.ts
 import { Request, Response } from "express";
 import { sendResponse, handleError } from "../../utils/responseUtil";
 import User from "../../models/user/userSchema";
 import { IProduct } from "../../utils/interface";
+import mongoose from "mongoose";
 
 // Controller function to get all wishlist items with product details
 export const getAllWishlistItems = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.params.userId; // Assuming userId is passed as a parameter
+	const userId = req.params.userId;
 
-    try {
-        // Find the user by userId and populate the wishlist with Product details
-        const user = await User.findById(userId).populate("wishlist").exec();
+	try {
+		const user = await User.findById(userId).populate("wishlist").exec();
 
-        if (!user) {
-            sendResponse(res, 404, null, "User not found");
-            return;
-        }
+		if (!user) {
+			sendResponse(res, 404, null, "User not found");
+			return;
+		}
 
-		// Extract product details from populated wishlist
 		const wishlistItems: IProduct[] = (user.wishlist ?? []).map((wishlistItem: any) => wishlistItem.toObject());
 
-        sendResponse(res, 200, wishlistItems, "Fetched wishlist items successfully");
-    } catch (error) {
-        handleError(res, error);
-    }
+		sendResponse(res, 200, wishlistItems, "Fetched wishlist items successfully");
+	} catch (error) {
+		handleError(res, error);
+	}
 };
 
 // Controller function to add a product to user's wishlist
 export const addToWishlist = async (req: Request, res: Response): Promise<void> => {
-	const userId = req.params.userId; // Assuming userId is passed as a parameter
-	const productId = req.body.productId; // Assuming productId is sent in the request body
+	const userId = req.params.userId;
+	const { productId } = req.body;
 
 	try {
-		// Find the user by userId
+		if (!mongoose.Types.ObjectId.isValid(productId)) {
+			sendResponse(res, 400, null, "Invalid product ID");
+			return;
+		}
+
+		const productObjectId = new mongoose.Types.ObjectId(productId);
 		const user = await User.findById(userId);
 
 		if (!user) {
@@ -39,22 +44,91 @@ export const addToWishlist = async (req: Request, res: Response): Promise<void> 
 			return;
 		}
 
-		// Handle the case where wishlist is undefined or null
 		if (!user.wishlist) {
-			user.wishlist = []; // Initialize wishlist to an empty array
+			user.wishlist = [];
 		}
 
-		// Check if the product is already in the wishlist
-		if (user.wishlist.includes(productId)) {
+		if (user.wishlist.some((id) => id.toString() === productObjectId.toString())) {
 			sendResponse(res, 400, null, "Product already in wishlist");
 			return;
 		}
 
-		// Add productId to the user's wishlist array
-		user.wishlist.push(productId);
+		user.wishlist.push(productObjectId as unknown as mongoose.Schema.Types.ObjectId);
 		await user.save();
 
-		sendResponse(res, 200, { updatedWishlist: user.wishlist }, "Product added to wishlist successfully");
+		sendResponse(
+			res,
+			200,
+			{
+				status: "success",
+				updatedWishlist: user.wishlist,
+			},
+			"Product added to wishlist successfully"
+		);
+		
+	} catch (error) {
+		handleError(res, error);
+	}
+};
+
+// Controller function to remove a product from user's wishlist
+export const removeFromWishlist = async (req: Request, res: Response): Promise<void> => {
+	const userId = req.params.userId;
+	const productId = req.params.productId;
+
+	try {
+		if (!mongoose.Types.ObjectId.isValid(productId)) {
+			sendResponse(res, 400, null, "Invalid product ID");
+			return;
+		}
+
+		const productObjectId = new mongoose.Types.ObjectId(productId);
+		const user = await User.findById(userId);
+
+		if (!user) {
+			sendResponse(res, 404, null, "User not found");
+			return;
+		}
+
+		if (!user.wishlist) {
+			user.wishlist = [];
+		}
+
+		user.wishlist = user.wishlist.filter((id) => id.toString() !== productObjectId.toString());
+		await user.save();
+
+		sendResponse(res, 200, { updatedWishlist: user.wishlist }, "Product removed from wishlist successfully");
+	} catch (error) {
+		handleError(res, error);
+	}
+};
+
+// Controller function to check if a product is in user's wishlist
+export const checkProductInWishlist = async (req: Request, res: Response): Promise<void> => {
+	const userId = req.params.userId;
+	const productId = req.params.productId;
+
+	try {
+		if (!mongoose.Types.ObjectId.isValid(productId)) {
+			sendResponse(res, 400, null, "Invalid product ID");
+			return;
+		}
+
+		const productObjectId = new mongoose.Types.ObjectId(productId);
+		const user = await User.findById(userId);
+
+		if (!user) {
+			sendResponse(res, 404, null, "User not found");
+			return;
+		}
+
+		if (!user.wishlist) {
+			user.wishlist = [];
+		}
+
+		const isInWishlist = user.wishlist.some((id) => id.toString() === productObjectId.toString());
+
+		sendResponse(res, 200, { inWishlist: isInWishlist }, "Checked product in wishlist successfully");
 	} catch (error) {
 		handleError(res, error);
 	}

@@ -3,7 +3,7 @@ import { IUser } from "../utils/interface";
 import { Request, Response, NextFunction } from "express";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
-const JWT_EXPIRATION = process.env.JWT_EXPIRATION || "1h";
+const JWT_EXPIRATION = process.env.JWT_EXPIRATION || "4d";
 
 export const generateToken = (user: IUser): string => {
     const payload = {
