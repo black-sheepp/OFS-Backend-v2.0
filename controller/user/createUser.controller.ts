@@ -5,54 +5,56 @@ import { IAddress, IUser } from "../../utils/interface";
 import bcrypt from "bcryptjs";
 import { sendEmail } from "../../nodemailer/emailUtil";
 import { addElitePoints } from "../../utils/elitePoints";
+import { generateToken } from "../../utils/jwtUtils";
+import jwt from 'jsonwebtoken';
 
-// Controller function to create a new user
+
+const secretKey = process.env.JWT_SECRET || 'your_secret_key'; // Ensure you have a secret key
+
 export const createUser = async (req: Request, res: Response): Promise<void> => {
-	const { name, phone, email, password, role } = req.body;
+    const { name, phone, email, password, role } = req.body;
 
-	try {
-		// Check if the user already exists
-		const existingUser = await userSchema.findOne({ email });
+    try {
+        const existingUser = await userSchema.findOne({ email });
+        if (existingUser) {
+            return sendResponse(res, 400, null, "User already exists");
+        }
 
-		if (existingUser) {
-			return sendResponse(res, 400, null, "User already exists");
-		}
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-		const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+        const newUser = new userSchema({
+            name,
+            phone,
+            email,
+            password: hashedPassword,
+            roles: role ? [role] : ["customer"],
+        });
 
-		const newUser = new userSchema({
-			name,
-			phone,
-			email,
-			password: hashedPassword,
-			roles: role ? [role] : ["customer"],
-		});
+        await newUser.save();
 
-		await newUser.save();
+        const token = jwt.sign({ id: newUser._id }, secretKey, { expiresIn: '1h' });
 
-		await sendEmail({
-			to: email,
-			subject: "Account Created",
-			greeting: `Hello ${name.split(" ")[0]},`,
-			intro: "Your account has been created successfully.",
-			details: [
-				{ label: "Name", value: name },
-				{ label: "Phone", value: phone },
-				{ label: "Email", value: email },
-				{ label: "Password", value: password },
-			],
-			footer: "Thank you for using our service.",
-			type: "NewAccountCreated",
-		});
+        await sendEmail({
+            to: email,
+            subject: "Account Created",
+            greeting: `Hello ${name.split(" ")[0]},`,
+            intro: "Your account has been created successfully.",
+            details: [
+                { label: "Name", value: name },
+                { label: "Phone", value: phone },
+                { label: "Email", value: email },
+                { label: "Password", value: password },
+            ],
+            footer: "Thank you for using our service.",
+            type: "NewAccountCreated",
+        });
 
-		// Redirect to profile creation
-		sendResponse(res, 201, newUser, "User created successfully. Please create your profile.");
-	} catch (error) {
-		handleError(res, error);
-	}
+        sendResponse(res, 201, { user: newUser, token }, "User created successfully. Please create your profile.");
+    } catch (error) {
+        handleError(res, error);
+    }
 };
 
-// Controller function to login a user
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
@@ -67,11 +69,13 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
             return sendResponse(res, 400, null, "Invalid credentials");
         }
 
-        sendResponse(res, 200, user, "User logged in successfully");
+        const token = generateToken(user);
+
+        sendResponse(res, 200, { user, token }, "User logged in successfully");
     } catch (error) {
         handleError(res, error);
     }
-}
+};
 
 // Controller function to create a user profile after creating a user
 export const createUserProfile = async (req: Request, res: Response): Promise<void> => {
