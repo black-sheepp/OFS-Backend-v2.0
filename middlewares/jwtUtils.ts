@@ -52,7 +52,8 @@ export const verifyTokenMiddleware = (req: Request & { user?: any }, res: Respon
 
 export const authorizeRoles = (...roles: string[]) => {
     return (req: Request & { user?: any }, res: Response, next: NextFunction): void => {
-        if (!roles.includes(req.user?.roles)) {
+        console.log(req.user);
+        if (!req.user.roles.some((role: string) => roles.includes(role))){
             res.status(403).send({ message: "Access denied." });
             return;
         }

@@ -100,7 +100,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 		// Extract the required fields from the user object
 		const userResponse = {
 			email: user.email,
-			id: user._id,
+			_id: user._id,
 			name: user.name,
 			role: user.roles,
 			status: user.status,
