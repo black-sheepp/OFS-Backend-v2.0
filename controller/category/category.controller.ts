@@ -166,20 +166,25 @@ export const getAllProductsofSubcategoryById = async (req: Request, res: Respons
 	const { id } = req.params;
 
 	try {
-		// Fetch the subcategory by ID
-		const category = await CategoryModel.findOne({ "subcategories._id": id }, { "subcategories.$": 1 }).exec();
+		// Fetch the category by subcategory ID
+		const category = await CategoryModel.findOne(
+			{ "subcategories._id": id },
+			{ "subcategories.$": 1, name: 1 }
+		).exec();
+
 		if (!category) {
 			return sendResponse(res, 404, null, "Subcategory not found");
 		}
 
 		const subcategory = category.subcategories[0];
 		const subcategoryName = subcategory.name;
+		const categoryName = category.name;
 
 		// Fetch products by subcategory ID
 		const products = await ProductModel.find({ subcategory: subcategory._id }).exec();
 
-		// Respond with the products and subcategory name
-		return sendResponse(res, 200, { subcategoryName, products }, "Products fetched successfully");
+		// Respond with the products, category name, and subcategory name
+		return sendResponse(res, 200, { categoryName, subcategoryName, products }, "Products fetched successfully");
 	} catch (error) {
 		return handleError(res, error);
 	}

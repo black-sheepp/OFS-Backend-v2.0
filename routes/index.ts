@@ -24,6 +24,6 @@ router.use("/wishlist", wishlistRoute);
 router.use("/cart", cartRoute);
 router.use("/order", orderRoute);
 router.use("/inventory", inventoryRoutes);
-router.use("/collection", collectionRoutes)
+router.use("/collection", collectionRoutes);
 
 export default router;

@@ -1,18 +1,12 @@
 import { Router } from "express";
 import { createBrand, getAllBrands, updateBrand, deleteBrand } from "../controller/brand/brand.controller";
+import { verifyTokenMiddleware, authorizeRoles } from "../middlewares/jwtUtils";
 
 const router = Router();
 
-// create a new brand
-router.post("/create-brand", createBrand);
-
-// get all brands
-router.get("/get-all-brands", getAllBrands);
-
-// update a brand
-router.put("/update-brand/:id", updateBrand);
-
-// delete a brand
-router.delete("/delete-brand/:id", deleteBrand);
+router.post("/create-brand", verifyTokenMiddleware, authorizeRoles("admin"), createBrand);
+router.get("/get-all-brands", verifyTokenMiddleware, getAllBrands);
+router.put("/update-brand/:id", verifyTokenMiddleware, authorizeRoles("admin"), updateBrand);
+router.delete("/delete-brand/:id", verifyTokenMiddleware, authorizeRoles("admin"), deleteBrand);
 
 export default router;

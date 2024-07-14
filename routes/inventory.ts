@@ -1,24 +1,19 @@
 import { Router } from "express";
-import { addInventory, deleteInventory, getAllInventories, getInventory, updateInventory } from "../controller/inventory-management/inventoryManagement.controller";
+import {
+	addInventory,
+	deleteInventory,
+	getAllInventories,
+	getInventory,
+	updateInventory,
+} from "../controller/inventory-management/inventoryManagement.controller";
+import { verifyTokenMiddleware, authorizeRoles } from "../middlewares/jwtUtils";
 
 const router = Router();
 
-// Routes for Inventory Management
-
-// Route to add inventory
-router.post("/add-inventory/:SKU", addInventory);
-
-// Route to update inventory
-router.put("/update-inventory/:SKU", updateInventory);
-
-// Route to delete inventory
-router.delete("/delete-inventory/:SKU", deleteInventory);
-
-// Route to get inventory
+router.post("/add-inventory/:SKU", verifyTokenMiddleware, authorizeRoles("admin"), addInventory);
+router.put("/update-inventory/:SKU", verifyTokenMiddleware, authorizeRoles("admin"), updateInventory);
+router.delete("/delete-inventory/:SKU", verifyTokenMiddleware, authorizeRoles("admin"), deleteInventory);
 router.get("/get-inventory/:SKU", getInventory);
-
-// Route to get all inventory
 router.get("/get-all-inventory", getAllInventories);
-
 
 export default router;

@@ -96,20 +96,20 @@ export interface IElitePointsHistory {
 // Interface for User schema
 export interface IUser extends Document {
 	name: string;
-	phone: string;
-	email: string;
-	password: string;
-	profilePicture?: string;
-	shippingAddresses?: Array<any>;
-	status: "active" | "inactive";
-	roles: Array<string>;
-	wishlist?: Array<mongoose.Schema.Types.ObjectId>;
-	wallet: number;
-	elitePoints: number;
-	walletTransactions: IWalletTransaction[];
-	elitePointsHistory: IElitePointsHistory[];
-	resetPasswordToken?: string;
-	resetPasswordExpires?: Date;
+    phone: string;
+    email: string;
+    password: string;
+    profilePicture?: string;
+    shippingAddresses?: Array<any>;
+    status: "active" | "inactive";
+    roles: Array<string>;
+    wishlist?: Array<mongoose.Schema.Types.ObjectId>;
+    wallet: number;
+    elitePoints: number;
+    walletTransactions: IWalletTransaction[];
+    elitePointsHistory: IElitePointsHistory[];
+    resetPasswordToken?: string;
+    resetPasswordExpires?: Date;
 }
 
 // Interface for Order schema
@@ -205,4 +205,10 @@ export interface ICollection {
 
 export interface ICollectionDocument extends ICollection, Document {
     addProductBySKU(sku: string): Promise<void>;
+}
+
+export interface IJWTPayload {
+    id: string;
+    email: string;
+    roles: string[];
 }
