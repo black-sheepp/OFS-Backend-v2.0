@@ -1,51 +1,41 @@
+// src/models/user/userSchema.ts
+
 import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcryptjs";
 import AddressSchema from "./addressSchema";
 import { IUser, IWalletTransaction, IElitePointsHistory } from "../../utils/interface";
 
-// Define Wallet Transaction Schema
-const WalletTransactionSchema: Schema = new Schema(
-    {
-        amount: { type: Number, required: true },
-        type: { type: String, enum: ["credit", "debit"], required: true },
-        description: { type: String },
-        date: { type: Date, default: Date.now },
-    },
-    { _id: false }
-);
+const WalletTransactionSchema: Schema = new Schema({
+    amount: { type: Number, required: true },
+    type: { type: String, enum: ["credit", "debit"], required: true },
+    description: { type: String },
+    date: { type: Date, default: Date.now },
+}, { _id: false });
 
-// Define Elite Points History Schema
-const ElitePointsHistorySchema: Schema = new Schema(
-    {
-        points: { type: Number, required: true },
-        type: { type: String, enum: ["earn", "spend"], required: true },
-        description: { type: String },
-        date: { type: Date, default: Date.now },
-    },
-    { _id: false }
-);
+const ElitePointsHistorySchema: Schema = new Schema({
+    points: { type: Number, required: true },
+    type: { type: String, enum: ["earn", "spend"], required: true },
+    description: { type: String },
+    date: { type: Date, default: Date.now },
+}, { _id: false });
 
-// Define the schema for the User
-const UserSchema: Schema = new Schema(
-    {
-        name: { type: String, required: true },
-        phone: { type: String, required: true },
-        email: { type: String, required: true, unique: true },
-        password: { type: String, required: true },
-        profilePicture: { type: String },
-        shippingAddresses: { type: [AddressSchema], default: [] },
-        status: { type: String, enum: ["active", "inactive"], default: "active" },
-        roles: { type: [String], enum: ["customer", "admin", "seller"], default: ["customer"] },
-        wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product", default: [] }],
-        wallet: { type: Number, default: 0 },
-        elitePoints: { type: Number, default: 0 },
-        walletTransactions: [WalletTransactionSchema],
-        elitePointsHistory: [ElitePointsHistorySchema],
-        resetPasswordToken: { type: String },
-        resetPasswordExpires: { type: Date },
-    },
-    { timestamps: true }
-);
+const UserSchema: Schema = new Schema({
+    name: { type: String, required: true },
+    phone: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    profilePicture: { type: String },
+    shippingAddresses: { type: [AddressSchema], default: [] },
+    status: { type: String, enum: ["active", "inactive"], default: "active" },
+    roles: { type: [String], enum: ["customer", "admin", "seller"], default: ["customer"] },
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product", default: [] }],
+    wallet: { type: Number, default: 0 },
+    elitePoints: { type: Number, default: 0 },
+    walletTransactions: [WalletTransactionSchema],
+    elitePointsHistory: [ElitePointsHistorySchema],
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
+}, { timestamps: true });
 
 UserSchema.index({ email: 1 });
 

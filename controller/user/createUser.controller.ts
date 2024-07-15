@@ -35,10 +35,11 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
 		// Create the payload object for JWT
 		const payload: IJWTPayload = {
-			id: newUser._id as unknown as string, // Cast to string
-			email: newUser.email,
-			roles: newUser.roles,
-		};
+            id: newUser._id as unknown as string, // Cast to string
+            email: newUser.email,
+            role: newUser.roles,
+            status: newUser.status
+        };
 
 		const token = generateToken(payload);
 		const refreshToken = await generateRefreshToken(payload);
@@ -89,10 +90,11 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
 		// Create the payload object for JWT
 		const payload: IJWTPayload = {
-			id: user._id as unknown as string, // Cast to string
-			email: user.email,
-			roles: user.roles,
-		};
+            id: user._id as unknown as string, // Cast to string
+            email: user.email,
+            role: user.roles,
+            status: user.status
+        };
 
 		const token = generateToken(payload);
 		const refreshToken = await generateRefreshToken(payload);

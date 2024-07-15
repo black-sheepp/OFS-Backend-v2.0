@@ -31,8 +31,12 @@ export const generateRefreshToken = async (user: IJWTPayload): Promise<string> =
     return refreshToken;
 };
 
-export const verifyToken = (token: string, secret: string): string | JwtPayload => {
-    return jwt.verify(token, secret);
+export const verifyToken = (token: string, secret: string): JwtPayload | string => {
+    try {
+        return jwt.verify(token, secret);
+    } catch (ex) {
+        throw new Error("Invalid token or token expired");
+    }
 };
 
 export const verifyTokenMiddleware = (req: Request & { user?: any }, res: Response, next: NextFunction): void => {
@@ -42,8 +46,12 @@ export const verifyTokenMiddleware = (req: Request & { user?: any }, res: Respon
         return;
     }
     try {
-        const decoded = verifyToken(token, JWT_SECRET) as IJWTPayload; // Type assertion here
+        const decoded = verifyToken(token, JWT_SECRET) as IJWTPayload;
         req.user = decoded;
+        if (req.user.status !== 'active') {
+            res.status(403).send({ message: "User is inactive." });
+            return;
+        }
         next();
     } catch (ex) {
         res.status(400).send({ message: "Invalid token." });
@@ -52,8 +60,7 @@ export const verifyTokenMiddleware = (req: Request & { user?: any }, res: Respon
 
 export const authorizeRoles = (...roles: string[]) => {
     return (req: Request & { user?: any }, res: Response, next: NextFunction): void => {
-        console.log(req.user);
-        if (!req.user.roles.some((role: string) => roles.includes(role))){
+        if (!req.user || !roles.includes(req.user.role)) {
             res.status(403).send({ message: "Access denied." });
             return;
         }
@@ -68,7 +75,7 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
         return;
     }
     try {
-        const decoded = verifyToken(token, REFRESH_TOKEN_SECRET) as IJWTPayload; // Type assertion here
+        const decoded = verifyToken(token, REFRESH_TOKEN_SECRET) as IJWTPayload;
 
         const existingToken = await RefreshToken.findOne({ token });
         if (!existingToken) {
@@ -76,7 +83,12 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
-        const user = { id: decoded.id, email: decoded.email, roles: decoded.roles };
+        const user = { id: decoded.id, email: decoded.email, role: decoded.role, status: decoded.status };
+        if (user.status !== 'active') {
+            res.status(403).send({ message: "User is inactive." });
+            return;
+        }
+
         const newAccessToken = generateToken(user);
         const newRefreshToken = await generateRefreshToken(user);
 

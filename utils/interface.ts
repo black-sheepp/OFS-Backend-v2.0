@@ -208,7 +208,8 @@ export interface ICollectionDocument extends ICollection, Document {
 }
 
 export interface IJWTPayload {
+    status: any;
     id: string;
     email: string;
-    roles: string[];
+    role: string[];
 }
