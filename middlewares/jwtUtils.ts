@@ -39,7 +39,7 @@ export const verifyToken = (token: string, secret: string): JwtPayload | string 
     }
 };
 
-export const verifyTokenMiddleware = (req: Request & { user?: any }, res: Response, next: NextFunction): void => {
+export const verifyTokenMiddleware = async (req: Request & { user?: any }, res: Response, next: NextFunction): Promise<void> => {
     const token = req.header("Authorization")?.replace("Bearer ", "");
     if (!token) {
         res.status(401).send({ message: "Access denied. No token provided." });
@@ -60,14 +60,18 @@ export const verifyTokenMiddleware = (req: Request & { user?: any }, res: Respon
 
 export const authorizeRoles = (...roles: string[]) => {
     return (req: Request & { user?: any }, res: Response, next: NextFunction): void => {
-        if (!req.user || req.user.status !== 'active' || !req.user.role || !roles.includes(req.user.role)) {
+        console.log(req.user);
+        console.log(req.user.role);
+        console.log(req.user.status);
+        console.log(roles.some(role => req.user.role.includes(role)));
+        
+        if (!req.user || !req.user.role || !roles.some(role => req.user.role.includes(role))) {
             res.status(403).send({ message: "Access denied." });
             return;
         }
         next();
     };
 };
-
 
 export const refreshToken = async (req: Request, res: Response): Promise<void> => {
     const token = req.body.refreshToken;
