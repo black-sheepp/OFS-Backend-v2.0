@@ -161,31 +161,45 @@ export const getProductsByCategoryAndSubcategoryName = async (req: Request, res:
 	}
 };
 
-// Controller function to get all products of a subcategory by its id
+// Controller function to get all products of a subcategory by its id with pagination
 export const getAllProductsofSubcategoryById = async (req: Request, res: Response) => {
-	const { id } = req.params;
+	const { id } = req.params; // Extract the subcategory ID from the request parameters
+	const { page = 1, limit = 16 } = req.query; // Extract page and limit from query parameters, with defaults
+	const pageNumber = parseInt(page as string, 10); // Convert page to a number
+	const limitNumber = parseInt(limit as string, 10); // Convert limit to a number
 
 	try {
 		// Fetch the category by subcategory ID
 		const category = await CategoryModel.findOne(
 			{ "subcategories._id": id },
 			{ "subcategories.$": 1, name: 1 }
-		).exec();
+		).exec(); // Find the category containing the specified subcategory ID
 
 		if (!category) {
-			return sendResponse(res, 404, null, "Subcategory not found");
+			return sendResponse(res, 404, null, "Subcategory not found"); // Return 404 if the subcategory is not found
 		}
 
-		const subcategory = category.subcategories[0];
-		const subcategoryName = subcategory.name;
-		const categoryName = category.name;
+		const subcategory = category.subcategories[0]; // Extract the subcategory details
+		const subcategoryName = subcategory.name; // Get the subcategory name
+		const categoryName = category.name; // Get the category name
 
-		// Fetch products by subcategory ID
-		const products = await ProductModel.find({ subcategory: subcategory._id }).exec();
+		// Fetch products by subcategory ID with pagination
+		const products = await ProductModel.find({ subcategory: subcategory._id })
+			.skip((pageNumber - 1) * limitNumber) // Skip the appropriate number of documents
+			.limit(limitNumber) // Limit the number of documents returned
+			.exec(); // Execute the query
 
-		// Respond with the products, category name, and subcategory name
-		return sendResponse(res, 200, { categoryName, subcategoryName, products }, "Products fetched successfully");
+		// Fetch total number of products in the subcategory
+		const totalProducts = await ProductModel.countDocuments({ subcategory: subcategory._id }).exec();
+
+		// Respond with the products, category name, subcategory name, and total number of products
+		return sendResponse(
+			res,
+			200,
+			{ categoryName, subcategoryName, products, totalProducts },
+			"Products fetched successfully"
+		);
 	} catch (error) {
-		return handleError(res, error);
+		return handleError(res, error); // Handle errors
 	}
 };

@@ -60,13 +60,14 @@ export const verifyTokenMiddleware = (req: Request & { user?: any }, res: Respon
 
 export const authorizeRoles = (...roles: string[]) => {
     return (req: Request & { user?: any }, res: Response, next: NextFunction): void => {
-        if (!req.user || !roles.includes(req.user.role)) {
+        if (!req.user || req.user.status !== 'active' || !req.user.role || !roles.includes(req.user.role)) {
             res.status(403).send({ message: "Access denied." });
             return;
         }
         next();
     };
 };
+
 
 export const refreshToken = async (req: Request, res: Response): Promise<void> => {
     const token = req.body.refreshToken;
