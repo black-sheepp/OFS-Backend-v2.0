@@ -1,10 +1,8 @@
-// src/controllers/cartController.ts
-
 import { Request, Response } from "express";
 import Cart from "../../models/cart/cartSchema";
 import Product from "../../models/product/productSchema";
 import { sendResponse, handleError } from "../../utils/responseUtil";
-import { AddToCartRequest, RemoveFromCartRequest, UpdateCartItemRequest } from "../../utils/interface";
+import { AddToCartRequest, RemoveFromCartRequest, UpdateCartItemRequest, ICartItem } from "../../utils/interface";
 import { ICart } from "../../utils/interface";
 
 interface AuthRequest extends Request {
@@ -34,7 +32,8 @@ export const addToCart = async (req: AuthRequest, res: Response): Promise<void> 
 		if (cartItem) {
 			cartItem.quantity += quantity;
 		} else {
-			cart.items.push({ product: productId, size, quantity });
+			const newItem: ICartItem = { product: productId, size, quantity };
+			cart.items.push(newItem);
 		}
 
 		await cart.save();
@@ -46,27 +45,28 @@ export const addToCart = async (req: AuthRequest, res: Response): Promise<void> 
 
 export const updateCartItem = async (req: AuthRequest, res: Response): Promise<void> => {
 	try {
-		const { productId, size, newSize, newQuantity } = req.body;
+		const { itemId, newSize, newQuantity } = req.body;
 		const userId = req.user?.id;
 
 		if (!userId) {
 			return sendResponse(res, 401, null, "User not authenticated");
 		}
 
-		const cart = (await Cart.findOne({ user: userId })) as ICart;
+		const cart = (await Cart.findOne({ user: userId }).populate("items.product")) as ICart;
 		if (!cart) {
 			return sendResponse(res, 404, null, "Cart not found");
 		}
 
-		const cartItem = cart.items.find((item) => item.product.toString() === productId && item.size === size);
+		const cartItem = cart.items.find((item) => item._id && item._id.toString() === itemId);
 		if (!cartItem) {
 			return sendResponse(res, 404, null, "Cart item not found");
 		}
 
-		cartItem.size = newSize || cartItem.size;
-		cartItem.quantity = newQuantity || cartItem.quantity;
+		if (newSize) cartItem.size = newSize;
+		if (newQuantity) cartItem.quantity = newQuantity;
 
 		await cart.save();
+		await cart.populate("items.product");
 		sendResponse(res, 200, cart, "Cart item updated successfully");
 	} catch (error) {
 		handleError(res, error);
@@ -75,7 +75,7 @@ export const updateCartItem = async (req: AuthRequest, res: Response): Promise<v
 
 export const removeFromCart = async (req: AuthRequest, res: Response): Promise<void> => {
 	try {
-		const { productId, size } = req.body;
+		const { itemId } = req.body;
 		const userId = req.user?.id;
 
 		if (!userId) {
@@ -87,7 +87,7 @@ export const removeFromCart = async (req: AuthRequest, res: Response): Promise<v
 			return sendResponse(res, 404, null, "Cart not found");
 		}
 
-		cart.items = cart.items.filter((item) => !(item.product.toString() === productId && item.size === size));
+		cart.items = cart.items.filter((item) => item._id && item._id.toString() !== itemId);
 
 		await cart.save();
 		sendResponse(res, 200, cart, "Product removed from cart successfully");
@@ -96,7 +96,6 @@ export const removeFromCart = async (req: AuthRequest, res: Response): Promise<v
 	}
 };
 
-// controller function to get all items in the cart
 export const getCart = async (req: AuthRequest, res: Response): Promise<void> => {
 	try {
 		const userId = req.user?.id;
@@ -115,5 +114,3 @@ export const getCart = async (req: AuthRequest, res: Response): Promise<void> =>
 		handleError(res, error);
 	}
 };
-
-// check cart items of the user and return the total items, total MRP price, total discounted price, total discount, total tax, total shipping charges, and total payable amount

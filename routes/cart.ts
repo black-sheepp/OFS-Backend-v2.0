@@ -4,16 +4,16 @@ import { addToCart, getCart, removeFromCart, updateCartItem } from "../controlle
 
 const router = Router();
 
-// add an item to the cart
+// Add an item to the cart
 router.post("/add-cart", verifyTokenMiddleware, addToCart);
 
-// update the size and quantity of an item in the cart
-router.post("/update-cart-item", verifyTokenMiddleware, updateCartItem);
+// Update the size and quantity of an item in the cart
+router.put("/update-cart-item", verifyTokenMiddleware, updateCartItem);
 
-// remove an item from the cart
-router.post("/remove-cart-item", verifyTokenMiddleware, removeFromCart);
+// Remove an item from the cart
+router.delete("/remove-cart-item", verifyTokenMiddleware, removeFromCart);
 
-// get all items in the cart
+// Get all items in the cart
 router.get("/get-cart", verifyTokenMiddleware, getCart);
 
 export default router;

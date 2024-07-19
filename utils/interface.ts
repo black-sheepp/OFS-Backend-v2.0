@@ -233,13 +233,14 @@ export interface RemoveFromCartRequest {
 	size: string;
 }
 
-export interface ICartItem {
-	product: string; // Use Product document reference type
-	size: string;
-	quantity: number;
-}
-
 export interface ICart extends Document {
 	user: string; // Use User document reference type
 	items: ICartItem[];
+}
+
+export interface ICartItem {
+	_id?: string; // Make _id optional
+	product: string;
+	size: string;
+	quantity: number;
 }
