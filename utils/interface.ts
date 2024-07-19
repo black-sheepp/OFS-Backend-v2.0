@@ -96,20 +96,20 @@ export interface IElitePointsHistory {
 // Interface for User schema
 export interface IUser extends Document {
 	name: string;
-    phone: string;
-    email: string;
-    password: string;
-    profilePicture?: string;
-    shippingAddresses?: Array<any>;
-    status: "active" | "inactive";
-    roles: Array<string>;
-    wishlist?: Array<mongoose.Schema.Types.ObjectId>;
-    wallet: number;
-    elitePoints: number;
-    walletTransactions: IWalletTransaction[];
-    elitePointsHistory: IElitePointsHistory[];
-    resetPasswordToken?: string;
-    resetPasswordExpires?: Date;
+	phone: string;
+	email: string;
+	password: string;
+	profilePicture?: string;
+	shippingAddresses?: Array<any>;
+	status: "active" | "inactive";
+	roles: Array<string>;
+	wishlist?: Array<mongoose.Schema.Types.ObjectId>;
+	wallet: number;
+	elitePoints: number;
+	walletTransactions: IWalletTransaction[];
+	elitePointsHistory: IElitePointsHistory[];
+	resetPasswordToken?: string;
+	resetPasswordExpires?: Date;
 }
 
 // Interface for Order schema
@@ -171,7 +171,6 @@ export type EmailType =
 	| "UpdateNotificationEmailToAdmin"
 	| "DeleteNotificationEmailToAdmin";
 
-
 // Interface for Voucher schema
 interface CreateVoucherParams {
 	code: string;
@@ -197,19 +196,50 @@ export interface IVoucher extends Document {
 
 // Interface for Collection schema
 export interface ICollection {
-    name: string;
-    products: string[];
+	name: string;
+	products: string[];
 	description: string;
-    isActive: boolean;
+	isActive: boolean;
 }
 
 export interface ICollectionDocument extends ICollection, Document {
-    addProductBySKU(sku: string): Promise<void>;
+	addProductBySKU(sku: string): Promise<void>;
 }
 
 export interface IJWTPayload {
-    status: any;
-    id: string;
-    email: string;
-    role: string[];
+	status: any;
+	id: string;
+	email: string;
+	role: string[];
+}
+
+// src/types/CartRequest.ts
+
+export interface AddToCartRequest {
+	productId: string;
+	size: string;
+	quantity: number;
+}
+
+export interface UpdateCartItemRequest {
+	productId: string;
+	size: string;
+	newSize?: string;
+	newQuantity?: number;
+}
+
+export interface RemoveFromCartRequest {
+	productId: string;
+	size: string;
+}
+
+export interface ICartItem {
+	product: string; // Use Product document reference type
+	size: string;
+	quantity: number;
+}
+
+export interface ICart extends Document {
+	user: Schema.Types.ObjectId; // Use User document reference type
+	items: ICartItem[];
 }

@@ -1,17 +1,18 @@
-import mongoose, { Schema } from "mongoose";
-import { ICart } from "../../utils/interface";
+// src/models/CartSchema.ts
 
-// Define the schema for the Cart
+import mongoose, { Schema } from "mongoose";
+import { ICart, ICartItem } from "../../utils/interface";
+
+const CartItemSchema: Schema = new Schema({
+	product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+	size: { type: String, required: true },
+	quantity: { type: Number, required: true, min: 1 },
+});
+
 const CartSchema: Schema = new Schema(
 	{
 		user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-		products: [
-			{
-				product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-                size: { type: String, required: true },
-				quantity: { type: Number, required: true, min: 1 },
-			},
-		],
+		items: [CartItemSchema],
 	},
 	{ timestamps: true }
 );
