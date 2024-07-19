@@ -39,11 +39,11 @@ export const verifyToken = (token: string, secret: string): JwtPayload | string 
 	}
 };
 
-export const verifyTokenMiddleware = async (
-	req: Request & { user?: any },
-	res: Response,
-	next: NextFunction
-): Promise<void> => {
+interface AuthRequest extends Request {
+	user?: IJWTPayload; // Ensure this matches your user payload
+}
+
+export const verifyTokenMiddleware = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
 	const token = req.header("Authorization")?.replace("Bearer ", "");
 	if (!token) {
 		res.status(401).send({ message: "Access denied. No token provided." });
@@ -63,16 +63,8 @@ export const verifyTokenMiddleware = async (
 };
 
 export const authorizeRoles = (...roles: string[]) => {
-	return (req: Request & { user?: any }, res: Response, next: NextFunction): void => {
-		console.log("User: ", req.user);
-		console.log("Role: ", req.user.role);
-		console.log("Status: ", req.user.status);
-		console.log(
-			"Verified: ",
-			roles.some((role) => req.user.role.includes(role))
-		);
-
-		if (!req.user || !req.user.role || !roles.some((role) => req.user.role.includes(role))) {
+	return (req: AuthRequest, res: Response, next: NextFunction): void => {
+		if (!req.user || !req.user.role || !roles.some((role) => req.user?.role?.includes(role))) {
 			res.status(403).send({ message: "Access denied." });
 			return;
 		}

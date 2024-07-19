@@ -7,17 +7,19 @@ import { sendResponse, handleError } from "../../utils/responseUtil";
 import { AddToCartRequest, RemoveFromCartRequest, UpdateCartItemRequest } from "../../utils/interface";
 import { ICart } from "../../utils/interface";
 
-// Add an item to the cart
-export const addToCart = async (req: Request<{}, {}, AddToCartRequest>, res: Response): Promise<void> => {
+interface AuthRequest extends Request {
+	user?: { id: string }; // Adjust based on your user object structure
+}
+
+export const addToCart = async (req: AuthRequest, res: Response): Promise<void> => {
 	try {
 		const { productId, size, quantity } = req.body;
-		const userId = req.user?.id; // assuming user ID is available in req.user
+		const userId = req.user?.id;
 
 		if (!userId) {
 			return sendResponse(res, 401, null, "User not authenticated");
 		}
 
-		// Validate product existence
 		const product = await Product.findById(productId);
 		if (!product) {
 			return sendResponse(res, 404, null, "Product not found");
@@ -42,11 +44,10 @@ export const addToCart = async (req: Request<{}, {}, AddToCartRequest>, res: Res
 	}
 };
 
-// Update the size and quantity of an item in the cart
-export const updateCartItem = async (req: Request<{}, {}, UpdateCartItemRequest>, res: Response): Promise<void> => {
+export const updateCartItem = async (req: AuthRequest, res: Response): Promise<void> => {
 	try {
 		const { productId, size, newSize, newQuantity } = req.body;
-		const userId = req.user?.id; // assuming user ID is available in req.user
+		const userId = req.user?.id;
 
 		if (!userId) {
 			return sendResponse(res, 401, null, "User not authenticated");
@@ -72,11 +73,10 @@ export const updateCartItem = async (req: Request<{}, {}, UpdateCartItemRequest>
 	}
 };
 
-// Remove an item from the cart
-export const removeFromCart = async (req: Request<{}, {}, RemoveFromCartRequest>, res: Response): Promise<void> => {
+export const removeFromCart = async (req: AuthRequest, res: Response): Promise<void> => {
 	try {
 		const { productId, size } = req.body;
-		const userId = req.user?.id; // assuming user ID is available in req.user
+		const userId = req.user?.id;
 
 		if (!userId) {
 			return sendResponse(res, 401, null, "User not authenticated");
@@ -95,3 +95,25 @@ export const removeFromCart = async (req: Request<{}, {}, RemoveFromCartRequest>
 		handleError(res, error);
 	}
 };
+
+// controller function to get all items in the cart
+export const getCart = async (req: AuthRequest, res: Response): Promise<void> => {
+	try {
+		const userId = req.user?.id;
+
+		if (!userId) {
+			return sendResponse(res, 401, null, "User not authenticated");
+		}
+
+		const cart = (await Cart.findOne({ user: userId }).populate("items.product")) as ICart;
+		if (!cart) {
+			return sendResponse(res, 404, null, "Cart not found");
+		}
+
+		sendResponse(res, 200, cart, "Cart retrieved successfully");
+	} catch (error) {
+		handleError(res, error);
+	}
+};
+
+// check cart items of the user and return the total items, total MRP price, total discounted price, total discount, total tax, total shipping charges, and total payable amount

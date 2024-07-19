@@ -62,7 +62,7 @@ export interface IProduct extends Document {
 
 // Interface for Cart schema
 export interface ICart extends Document {
-	user: Schema.Types.ObjectId;
+	user: string;
 	products: { product: Schema.Types.ObjectId; quantity: number }[];
 }
 
@@ -240,6 +240,6 @@ export interface ICartItem {
 }
 
 export interface ICart extends Document {
-	user: Schema.Types.ObjectId; // Use User document reference type
+	user: string; // Use User document reference type
 	items: ICartItem[];
 }
