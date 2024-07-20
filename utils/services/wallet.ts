@@ -1,5 +1,5 @@
-import userSchema from "../models/user/userSchema";
-import { IWalletTransaction } from "./interface";
+import userSchema from "../../models/user/userSchema";
+import { IWalletTransaction } from "../interface";
 
 // Function to add wallet transaction (credit)
 export const addWalletTransaction = async (userId: string, amount: number, description: string): Promise<void> => {

@@ -16,6 +16,7 @@ router.delete("/remove-cart-item", verifyTokenMiddleware, removeFromCart);
 // Get all items in the cart
 router.get("/get-cart", verifyTokenMiddleware, getCart);
 
+// Get all items in the cart for checkout
 router.get("/get-cart-for-checkout", verifyTokenMiddleware, getCartForCheckout);
 
 export default router;

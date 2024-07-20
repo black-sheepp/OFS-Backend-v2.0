@@ -246,3 +246,7 @@ export interface ICartItem {
 	size: string;
 	quantity: number;
 }
+
+export interface AuthRequest extends Request {
+    user?: { id: string }; // Adjust based on your user object structure
+}

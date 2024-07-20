@@ -1,36 +1,19 @@
 import { Router } from "express";
-import { createVoucher, applyVoucher, listAllVouchers } from "../utils/services/voucherService";
 import { authorizeRoles, verifyTokenMiddleware } from "../middlewares/jwtUtils";
+import { createVoucher, getVouchers, deleteVoucher, updateVoucher } from "../controller/voucher/voucher.controller";
 
 const router = Router();
 
-router.post("/create-voucher", verifyTokenMiddleware, authorizeRoles("admin"), async (req, res) => {
-	try {
-		const voucherData = req.body;
-		const voucher = await createVoucher(voucherData);
-		res.status(200).send(voucher);
-	} catch (error: any) {
-		res.status(400).send(error.message);
-	}
-});
+// create voucher by admin only
+router.post("/create-voucher",verifyTokenMiddleware, authorizeRoles("admin"), createVoucher);
 
-router.post("/apply-voucher", verifyTokenMiddleware, async (req, res) => {
-	try {
-		const { code, purchaseAmount } = req.body;
-		const discount = await applyVoucher(code, purchaseAmount);
-		res.status(200).send({ discount });
-	} catch (error: any) {
-		res.status(400).send(error.message);
-	}
-});
+// get all vouchers by admins only
+router.get("/get-vouchers", verifyTokenMiddleware, authorizeRoles("admin"), getVouchers);
 
-router.get("/list-vouchers", verifyTokenMiddleware, authorizeRoles("admin"), async (req, res) => {
-	try {
-		const vouchers = await listAllVouchers();
-		res.status(200).send(vouchers);
-	} catch (error: any) {
-		res.status(400).send(error.message);
-	}
-});
+// delete voucher by admin only
+router.delete("/delete-voucher", verifyTokenMiddleware, authorizeRoles("admin"), deleteVoucher);
+
+// update voucher by admin only
+router.put("/update-voucher", verifyTokenMiddleware, authorizeRoles("admin"), updateVoucher);
 
 export default router;

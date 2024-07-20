@@ -1,51 +1,58 @@
+// src/controllers/voucherController.ts
+import Voucher, { IVoucher } from "../../models/voucher/voucherSchema";
 import { Request, Response } from "express";
-import { body, validationResult } from "express-validator";
-import { createVoucher } from "../../utils/voucherService";
+import { sendResponse, handleError } from "../../utils/responseUtil";
 
-// Controller function to handle voucher creation requests
-export const createVoucherController = [
-	// Validate and sanitize input fields
-	body("code").isString().trim().notEmpty(),
-	body("expiryDate").isISO8601().toDate(),
-	body("totalVouchers").isInt({ min: 1 }),
-	body("discountType").isIn(["percentage", "fixed"]),
-	body("discountValue").isFloat({ min: 0 }),
-	body("minPurchaseAmount").isFloat({ min: 0 }),
-	body("maxDiscountValue").optional().isFloat({ min: 0 }),
+// Create a new voucher
+export const createVoucher = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { code, expiryDate, totalVouchers, discountType, discountValue, minPurchaseAmount, maxDiscountValue } = req.body;
 
-	async (req: Request, res: Response): Promise<void> => {
-		const errors = validationResult(req);
+        const voucher = await Voucher.create({
+            code,
+            expiryDate,
+            totalVouchers,
+            remainingVouchers: totalVouchers,
+            discountType,
+            discountValue,
+            minPurchaseAmount,
+            maxDiscountValue: discountType === "percentage" ? maxDiscountValue : undefined,
+        });
 
-		if (!errors.isEmpty()) {
-			// Return validation errors if any
-			res.status(400).json({ errors: errors.array() });
-			return;
-		}
+        sendResponse(res, 201, voucher, "Voucher created successfully");
+    } catch (error) {
+        handleError(res, error);
+    }
+};
 
-		const { code, expiryDate, totalVouchers, discountType, discountValue, minPurchaseAmount, maxDiscountValue } =
-			req.body;
+// Get all vouchers
+export const getVouchers = async (_req: Request, res: Response): Promise<void> => {
+    try {
+        const vouchers = await Voucher.find();
+        sendResponse(res, 200, vouchers);
+    } catch (error) {
+        handleError(res, error);
+    }
+};
 
-		try {
-			// Call the service function to create a new voucher
-			const voucher = await createVoucher({
-				code,
-				expiryDate,
-				totalVouchers,
-				discountType,
-				discountValue,
-				minPurchaseAmount,
-				maxDiscountValue,
-			});
+// Delete a voucher
+export const deleteVoucher = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { voucherId } = req.body;
+        await Voucher.findByIdAndDelete(voucherId);
+        sendResponse(res, 200, null, "Voucher deleted successfully");
+    } catch (error) {
+        handleError(res, error);
+    }
+};
 
-			// Send the created voucher as a response with status 201 (Created)
-			res.status(201).json(voucher);
-		} catch (error) {
-			// Handle errors and send a 400 (Bad Request) response with the error message
-			if (error instanceof Error) {
-				res.status(400).json({ error: error.message });
-			} else {
-				res.status(400).json({ error: "An unknown error occurred" });
-			}
-		}
-	},
-];
+// Update a voucher
+export const updateVoucher = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { voucherId, update } = req.body;
+        const voucher = await Voucher.findByIdAndUpdate(voucherId, update, { new: true });
+        sendResponse(res, 200, voucher, "Voucher updated successfully");
+    } catch (error) {
+        handleError(res, error);
+    }
+};
