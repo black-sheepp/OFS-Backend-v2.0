@@ -2,7 +2,13 @@ import { Request, Response } from "express";
 import Cart from "../../models/cart/cartSchema";
 import Product from "../../models/product/productSchema";
 import { sendResponse, handleError } from "../../utils/responseUtil";
-import { AddToCartRequest, RemoveFromCartRequest, UpdateCartItemRequest, ICartItem } from "../../utils/interface";
+import {
+	AddToCartRequest,
+	RemoveFromCartRequest,
+	UpdateCartItemRequest,
+	ICartItem,
+	IProduct,
+} from "../../utils/interface";
 import { ICart } from "../../utils/interface";
 
 interface AuthRequest extends Request {
@@ -104,12 +110,40 @@ export const getCart = async (req: AuthRequest, res: Response): Promise<void> =>
 			return sendResponse(res, 401, null, "User not authenticated");
 		}
 
-		const cart = (await Cart.findOne({ user: userId }).populate("items.product")) as ICart;
+		const cart = await Cart.findOne({ user: userId }).populate("items.product");
 		if (!cart) {
 			return sendResponse(res, 404, null, "Cart not found");
 		}
 
-		sendResponse(res, 200, cart, "Cart retrieved successfully");
+		const totalMRP = Math.round(
+			cart.items.reduce((total, item) => {
+				const product = item.product as IProduct; // Ensure TypeScript knows this is an IProduct
+				return total + product.MRP * item.quantity;
+			}, 0)
+		);
+
+		const totalDiscount = Math.round(
+			cart.items.reduce((total, item) => {
+				const product = item.product as IProduct;
+				return total + (product.MRP - product.sellingPrice) * item.quantity;
+			}, 0)
+		);
+
+		const totalSellingPrice = Math.round(
+			cart.items.reduce((total, item) => {
+				const product = item.product as IProduct;
+				return total + product.sellingPrice * item.quantity;
+			}, 0)
+		);
+
+		const cartData = {
+			...cart.toObject(),
+			totalMRP,
+			totalDiscount,
+			totalSellingPrice,
+		};
+
+		sendResponse(res, 200, cartData, "Cart retrieved successfully");
 	} catch (error) {
 		handleError(res, error);
 	}

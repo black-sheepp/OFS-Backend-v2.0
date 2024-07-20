@@ -38,6 +38,7 @@ export interface IReview extends Document {
 
 // Interface for Product schema
 export interface IProduct extends Document {
+	_id: string;
 	name: string;
 	brand: Schema.Types.ObjectId;
 	description: string;
@@ -240,7 +241,7 @@ export interface ICart extends Document {
 
 export interface ICartItem {
 	_id?: string; // Make _id optional
-	product: string;
+	product: IProduct | string;
 	size: string;
 	quantity: number;
 }
