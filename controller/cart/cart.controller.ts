@@ -32,7 +32,12 @@ export const addToCart = async (req: AuthRequest, res: Response): Promise<void> 
         if (cartItem) {
             cartItem.quantity += quantity;
         } else {
-            const newItem: ICartItem = { product: productId, size, quantity };
+            const newItem: ICartItem = {
+				product: productId, size, quantity,
+				toObject: function () {
+					throw new Error("Function not implemented.");
+				}
+			};
             cart.items.push(newItem);
         }
 
@@ -67,7 +72,34 @@ export const updateCartItem = async (req: AuthRequest, res: Response): Promise<v
 
         await cart.save();
         await cart.populate("items.product");
-        sendResponse(res, 200, cart, "Cart item updated successfully");
+
+        const totalMRP = cart.items.reduce((total, item) => {
+            const product = item.product as IProduct;
+            return total + product.MRP * item.quantity;
+        }, 0);
+
+        const totalDiscount = cart.items.reduce((total, item) => {
+            const product = item.product as IProduct;
+            return total + (product.MRP - product.sellingPrice) * item.quantity;
+        }, 0);
+
+        const totalSellingPrice = cart.items.reduce((total, item) => {
+            const product = item.product as IProduct;
+            return total + product.sellingPrice * item.quantity;
+        }, 0);
+
+        const cartData = {
+            ...cart.toObject(),
+            totalMRP,
+            totalDiscount,
+            totalSellingPrice,
+            items: cart.items.map(item => ({
+                ...item.toObject(),
+                availableSizes: (item.product as IProduct).inventory.map(inv => inv.size)
+            }))
+        };
+
+        sendResponse(res, 200, cartData, "Cart item updated successfully");
     } catch (error) {
         handleError(res, error);
     }
@@ -82,7 +114,7 @@ export const removeFromCart = async (req: AuthRequest, res: Response): Promise<v
             return sendResponse(res, 401, null, "User not authenticated");
         }
 
-        const cart = (await Cart.findOne({ user: userId })) as ICart;
+        const cart = (await Cart.findOne({ user: userId }).populate("items.product")) as ICart;
         if (!cart) {
             return sendResponse(res, 404, null, "Cart not found");
         }
@@ -90,7 +122,34 @@ export const removeFromCart = async (req: AuthRequest, res: Response): Promise<v
         cart.items = cart.items.filter((item) => item._id && item._id.toString() !== itemId);
 
         await cart.save();
-        sendResponse(res, 200, cart, "Product removed from cart successfully");
+
+        const totalMRP = cart.items.reduce((total, item) => {
+            const product = item.product as IProduct;
+            return total + product.MRP * item.quantity;
+        }, 0);
+
+        const totalDiscount = cart.items.reduce((total, item) => {
+            const product = item.product as IProduct;
+            return total + (product.MRP - product.sellingPrice) * item.quantity;
+        }, 0);
+
+        const totalSellingPrice = cart.items.reduce((total, item) => {
+            const product = item.product as IProduct;
+            return total + product.sellingPrice * item.quantity;
+        }, 0);
+
+        const cartData = {
+            ...cart.toObject(),
+            totalMRP,
+            totalDiscount,
+            totalSellingPrice,
+            items: cart.items.map(item => ({
+                ...item.toObject(),
+                availableSizes: (item.product as IProduct).inventory.map(inv => inv.size)
+            }))
+        };
+
+        sendResponse(res, 200, cartData, "Product removed from cart successfully");
     } catch (error) {
         handleError(res, error);
     }
@@ -106,18 +165,34 @@ export const getCart = async (req: AuthRequest, res: Response): Promise<void> =>
 
         const cart = await Cart.findOne({ user: userId }).populate("items.product");
         if (!cart || cart.items.length === 0) {
-            return sendResponse(res, 200, { items: [] }, "Cart is empty");
+            return sendResponse(res, 200, { items: [], totalMRP: 0, totalDiscount: 0, totalSellingPrice: 0 }, "Cart is empty");
         }
 
-        const cartData = cart.toObject();
-        cartData.items = cartData.items.map(item => ({
-            ...item,
-            availableSizes: isIProduct(item.product) ? item.product.inventory.map(inventory => inventory.size) : []
-        }));
+        const totalMRP = cart.items.reduce((total, item) => {
+            const product = item.product as IProduct;
+            return total + product.MRP * item.quantity;
+        }, 0);
 
-        function isIProduct(product: string | IProduct): product is IProduct {
-            return typeof product !== 'string';
-        }
+        const totalDiscount = cart.items.reduce((total, item) => {
+            const product = item.product as IProduct;
+            return total + (product.MRP - product.sellingPrice) * item.quantity;
+        }, 0);
+
+        const totalSellingPrice = cart.items.reduce((total, item) => {
+            const product = item.product as IProduct;
+            return total + product.sellingPrice * item.quantity;
+        }, 0);
+
+        const cartData = {
+            ...cart.toObject(),
+            totalMRP,
+            totalDiscount,
+            totalSellingPrice,
+            items: cart.items.map(item => ({
+                ...item.toObject(),
+                availableSizes: (item.product as IProduct).inventory.map(inv => inv.size)
+            }))
+        };
 
         sendResponse(res, 200, cartData, "Cart retrieved successfully");
     } catch (error) {

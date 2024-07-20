@@ -240,6 +240,7 @@ export interface ICart extends Document {
 }
 
 export interface ICartItem {
+	toObject(): any;
 	_id?: string; // Make _id optional
 	product: IProduct | string;
 	size: string;
