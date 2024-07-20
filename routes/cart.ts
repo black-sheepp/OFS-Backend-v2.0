@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyTokenMiddleware } from "../middlewares/jwtUtils";
-import { addToCart, getCart, removeFromCart, updateCartItem } from "../controller/cart/cart.controller";
+import { addToCart, getCart, getCartForCheckout, removeFromCart, updateCartItem } from "../controller/cart/cart.controller";
 
 const router = Router();
 
@@ -15,5 +15,7 @@ router.delete("/remove-cart-item", verifyTokenMiddleware, removeFromCart);
 
 // Get all items in the cart
 router.get("/get-cart", verifyTokenMiddleware, getCart);
+
+router.get("/get-cart-for-checkout", verifyTokenMiddleware, getCartForCheckout);
 
 export default router;
