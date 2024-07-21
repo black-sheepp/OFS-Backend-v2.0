@@ -1,4 +1,4 @@
-import Voucher, { IVoucher } from "../models/voucher/voucher";
+import Voucher, { IVoucher } from "../../models/voucher/voucherSchema";
 
 interface CreateVoucherParams {
 	code: string;

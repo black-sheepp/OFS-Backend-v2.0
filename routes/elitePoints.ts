@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyTokenMiddleware } from "../middlewares/jwtUtils";
-import { getElitePointsHistory, getElitePoints } from "../controller/elitepoints/elitePoints.controller";
+import { getElitePointsHistory, getElitePoints, applyElitePoints } from "../controller/elitepoints/elitePoints.controller";
 import { addElitePoints, spendElitePoints } from "../controller/elitepoints/elitePoints.controller";
 
 const router = Router();
@@ -16,5 +16,8 @@ router.get("/get-elite-points-history/:userId", verifyTokenMiddleware, getEliteP
 
 // get elite points of a user
 router.get("/get-elite-points/:userId", verifyTokenMiddleware, getElitePoints);
+
+// Spend elite points of a user and calculate the new payable amount
+router.post("/apply-elite-points", verifyTokenMiddleware, applyElitePoints);
 
 export default router;

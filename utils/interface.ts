@@ -1,4 +1,6 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
+import { Request } from "express";
+
 
 // Interface for Subcategory schema
 export interface ISubcategory extends Document {
@@ -249,4 +251,37 @@ export interface ICartItem {
 
 export interface AuthRequest extends Request {
     user?: { id: string }; // Adjust based on your user object structure
+}
+
+export interface ApplyVoucherRequest extends AuthRequest {
+    body: {
+        voucherCode: string;
+    };
+}
+
+export interface ProcessOrderRequest extends AuthRequest {
+    body: {
+        voucherCode: string;
+        useElitePoints: number;
+        useWalletBalance: number;
+    };
+}
+
+// Interface for Order Item
+export interface IOrderItem {
+    product: mongoose.Schema.Types.ObjectId | IProduct;
+    quantity: number;
+    size: string;
+}
+
+// Interface for Process Order Request
+export interface ProcessOrderRequest extends Request {
+    body: {
+        voucherCode: string;
+        useElitePoints: number;
+        useWalletBalance: number;
+    };
+    user?: {
+        id: string;
+    };
 }

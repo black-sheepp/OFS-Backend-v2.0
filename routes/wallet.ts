@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyTokenMiddleware } from "../middlewares/jwtUtils";
-import { addWalletBalance, deductWalletBalance, getWalletHistory, getWalletBalance } from "../controller/wallet/wallet.controller";
+import { addWalletBalance, deductWalletBalance, getWalletHistory, getWalletBalance, applyWalletBalance } from "../controller/wallet/wallet.controller";
 
 const router = Router();
 
@@ -15,5 +15,8 @@ router.get("/get-wallet-history/:userId", verifyTokenMiddleware, getWalletHistor
 
 // get wallet balance of a user
 router.get("/get-wallet-balance/:userId", verifyTokenMiddleware, getWalletBalance);
+
+// Deduct balance from a user's wallet and calculate the new payable amount
+router.post("/apply-wallet-balance", verifyTokenMiddleware, applyWalletBalance);
 
 export default router;
