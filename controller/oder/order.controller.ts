@@ -182,8 +182,8 @@ export const getOrders = async (req: AuthRequest, res: Response): Promise<void> 
             return handleError(res, new Error("User not found"), 404);
         }
 
-        // Get user's orders
-        const orders = await Order.find({ user: userId }).populate("items.product");
+        // Get user's orders and sort them in descending order by creation date
+        const orders = await Order.find({ user: userId }).sort({ createdAt: -1 }).populate("items.product");
 
         // Return orders
         sendResponse(res, 200, orders, "Order history fetched successfully");
