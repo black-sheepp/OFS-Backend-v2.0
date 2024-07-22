@@ -4,10 +4,10 @@ import userSchema from "../../models/user/userSchema";
 import { EmailData, IAddress, IJWTPayload, IUser } from "../../utils/interface";
 import bcrypt from "bcryptjs";
 import { sendEmail } from "../../nodemailer/emailUtil";
-import { addElitePoints } from "../../utils/elitePoints";
 import jwt from "jsonwebtoken";
 import { deleteRefreshToken, generateRefreshToken, generateToken } from "../../middlewares/jwtUtils";
 import { getUserIpAndDeviceInfo } from "../../utils/getUserIpAndDeviceInfo";
+import { addElitePoints } from "../../utils/services/elitePoints";
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
 	const { name, phone, email, password, role } = req.body;

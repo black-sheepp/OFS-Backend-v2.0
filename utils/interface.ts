@@ -1,4 +1,6 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
+import { Request } from "express";
+
 
 // Interface for Subcategory schema
 export interface ISubcategory extends Document {
@@ -38,6 +40,7 @@ export interface IReview extends Document {
 
 // Interface for Product schema
 export interface IProduct extends Document {
+	_id: string;
 	name: string;
 	brand: Schema.Types.ObjectId;
 	description: string;
@@ -233,13 +236,52 @@ export interface RemoveFromCartRequest {
 	size: string;
 }
 
+export interface ICart extends Document {
+	user: string; // Use User document reference type
+	items: ICartItem[];
+}
+
 export interface ICartItem {
-	product: string; // Use Product document reference type
+	toObject(): any;
+	_id?: string; // Make _id optional
+	product: IProduct | string;
 	size: string;
 	quantity: number;
 }
 
-export interface ICart extends Document {
-	user: string; // Use User document reference type
-	items: ICartItem[];
+export interface AuthRequest extends Request {
+    user?: { id: string }; // Adjust based on your user object structure
+}
+
+export interface ApplyVoucherRequest extends AuthRequest {
+    body: {
+        voucherCode: string;
+    };
+}
+
+export interface ProcessOrderRequest extends AuthRequest {
+    body: {
+        voucherCode: string;
+        useElitePoints: number;
+        useWalletBalance: number;
+    };
+}
+
+// Interface for Order Item
+export interface IOrderItem {
+    product: mongoose.Schema.Types.ObjectId | IProduct;
+    quantity: number;
+    size: string;
+}
+
+// Interface for Process Order Request
+export interface ProcessOrderRequest extends Request {
+    body: {
+        voucherCode: string;
+        useElitePoints: number;
+        useWalletBalance: number;
+    };
+    user?: {
+        id: string;
+    };
 }

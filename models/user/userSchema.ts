@@ -1,9 +1,15 @@
-// src/models/user/userSchema.ts
-
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcryptjs";
 import AddressSchema from "./addressSchema";
 import { IUser, IWalletTransaction, IElitePointsHistory } from "../../utils/interface";
+
+// Define the interface for the custom methods
+export interface IUserMethods {
+    addWalletTransaction(transaction: IWalletTransaction): Promise<void>;
+    addElitePointsTransaction(transaction: IElitePointsHistory): Promise<void>;
+}
+
+export type UserModel = Model<IUser, {}, IUserMethods>;
 
 const WalletTransactionSchema: Schema = new Schema({
     amount: { type: Number, required: true },
@@ -19,7 +25,7 @@ const ElitePointsHistorySchema: Schema = new Schema({
     date: { type: Date, default: Date.now },
 }, { _id: false });
 
-const UserSchema: Schema = new Schema({
+const UserSchema: Schema<IUser, UserModel, IUserMethods> = new Schema({
     name: { type: String, required: true },
     phone: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -71,4 +77,4 @@ UserSchema.methods.addElitePointsTransaction = async function (transaction: IEli
     await user.save();
 };
 
-export default mongoose.model<IUser>("User", UserSchema);
+export default mongoose.model<IUser, UserModel>("User", UserSchema);

@@ -9,6 +9,9 @@ import cartRoute from "./cart";
 import orderRoute from "./order";
 import inventoryRoutes from "./inventory";
 import collectionRoutes from "./collection";
+import voucherRoutes from "./voucher";
+import elitePointsRoutes from "./elitePoints";
+import walletRoutes from "./wallet";
 
 const router: Router = express.Router();
 
@@ -25,5 +28,8 @@ router.use("/cart", cartRoute);
 router.use("/order", orderRoute);
 router.use("/inventory", inventoryRoutes);
 router.use("/collection", collectionRoutes);
+router.use("/voucher", voucherRoutes);
+router.use("/elitepoints", elitePointsRoutes);
+router.use("/wallet", walletRoutes);
 
 export default router;

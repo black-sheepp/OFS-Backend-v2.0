@@ -1,4 +1,4 @@
-import userSchema from "../models/user/userSchema";
+import userSchema from "../../models/user/userSchema";
 
 // Function to add elite points
 export const addElitePoints = async (userId: string, points: number, description: string): Promise<void> => {
