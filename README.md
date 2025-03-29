@@ -127,5 +127,3 @@ The API uses a standardized JSON format for responses and errors:
 Contributions are welcome! Please follow standard fork/pull request workflows. Ensure code adheres to linting/formatting rules and includes tests where applicable.
 
 ## License
-
-ISC (or choose another license if preferred)
